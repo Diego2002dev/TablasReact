@@ -1,0 +1,74 @@
+#barra {
+    margin: auto;
+    font-size: 22px;
+    font-family: 'Courier New';
+    margin-top: 50px;
+}
+
+ul {
+    display: flex;
+    justify-content: right;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+a:visited {
+    color: inherit;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    margin-right: 50px;
+}
+
+li a:hover {
+    color: rgb(100, 180, 240);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#principal{
+    color: rgb(0, 0, 255);
+    text-decoration: underline;
+}
+
+
+#motivos:link, #clientes:link, #profesiones:link {
+    color: #000;
+}
+
+a.active-linkMotivos {
+    color: rgb(100, 180, 240);
+    text-decoration: underline;
+}
+#motivos:hover{
+    color: rgb(100, 180, 240);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+a.active-linkProfesiones {
+    color: rgb(230, 40, 90);
+    text-decoration: underline; 
+}
+#profesiones:hover{
+    color: rgb(230, 40, 90);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+a.active-linkClientes {
+    color: rgb(110, 215, 80);
+    text-decoration: underline;
+}
+#clientes:hover{
+    color: rgb(110, 215, 80);
+    cursor: pointer;
+    text-decoration: underline;
+}
