@@ -1,0 +1,143 @@
+
+/******************************
+ *                            *
+ *           TABLA            *
+ *                            *
+ ******************************/
+
+
+#contenedor {
+    overflow-y: auto;
+    width: 100%;
+    max-height: 65.31vh;
+}
+
+
+#tablaMotivosVisita {
+    position: relative;
+    width: 90%;
+    left: 9%;
+    border-spacing: 1px;
+    text-align: center;
+    table-layout: fixed;
+}
+
+
+#contenedor::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+
+.tHead {
+    background-color: rgb(100, 180, 240);
+}
+
+
+.td, th {
+    border: 3px solid black;
+}
+
+#thIdMotivos{
+width: 8.95%;
+}
+#thNombreMotivos{
+width: 66.24%;
+}
+#thEstadoMotivos{
+width: 13.43%;
+}
+
+
+
+
+
+#tablaMotivosVisita tbody tr:nth-child(even) .td {
+    background-color: lightblue;
+}
+
+
+#tablaMotivosVisita tbody tr:nth-child(odd) .td {
+    background-color: rgb(60, 226, 226);
+}
+
+
+
+
+
+/******************************
+ *                            *
+ *           BOTONES          *
+ *                            *
+ ******************************/
+
+
+
+
+
+#contenedorBotonCrear {
+    position: relative;
+    left: 9.03%;
+}
+
+#botonCrear {
+    margin-top: 0.3%;
+    width: 27.3%;
+    height: 40px;
+    font-size: 22px;
+    font-family: 'Courier New';
+    font-weight: 700;
+}
+
+
+.botonModificarMotivos {
+    float: left;
+    left: 1%;
+    position: relative;
+    font-size: 14px;
+    font-family: "Courier New";
+    font-weight: 600;
+}
+
+
+
+
+
+
+.swal2-confirm{
+    background-color: blue;
+    transition: 0.3s;
+}
+
+.swal2-confirm:hover{ 
+    color: black;
+}
+
+
+
+
+
+/******************************
+ *                            *
+ * FORMULARIO Y SUS ELEMENTOS *
+ *                            *
+ ******************************/
+
+ .h2Formulario{
+    margin-top: 1%;
+}
+
+.h3Formulario{
+    margin-top: 1%;
+    margin-bottom: 8%;
+
+}
+
+#botonFormularioMotivos{
+    background-color: rgb(100, 180, 240);
+}#botonFormularioMotivos:hover{
+    border: 3px solid rgb(100, 180, 240);
+    color: rgb(100, 180, 240);
+    background-color: rgb(210, 210, 210);
+}

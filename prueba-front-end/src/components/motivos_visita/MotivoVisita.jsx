@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react'
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
+import styles from "./motivosVisita.module.css"
 
 const MotivoVisita = ({motivo}) => {
 
@@ -8,12 +9,12 @@ const MotivoVisita = ({motivo}) => {
     return (
     <Fragment>
       <tr>
-        <td className='td'>{id}</td>
-        <td className='td'>{nombre}</td>
-        <td className='td'>{estado}</td>
+        <td className={styles.td}>{id}</td>
+        <td className={styles.td}>{nombre}</td>
+        <td className={styles.td}>{estado}</td>
         <td>
           <Link to={`modificar/${id}`}>
-            <button className="botonModificarMotivos" id={id}>Modificar</button>
+            <button className={styles.botonModificarMotivos} id={id}>Modificar</button>
           </Link>
         </td>
       </tr>

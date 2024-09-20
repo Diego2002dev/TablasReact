@@ -72,7 +72,7 @@ $nombre = trim(ucfirst(strtolower($nombre))); // strtolower : Combierte el Strin
 $nombre = implode(' ',array_filter(explode(' ',$nombre))); // Primero quita todos los espacios entre las palabras
                                                            // y luego añade un espacio entre cada palabras
 
-
+//  -------  Cuando el formulario es "Baja" y este se cambia a "Activo" da ERROR
 
 if($_SERVER["REQUEST_METHOD"] === "POST"){
     

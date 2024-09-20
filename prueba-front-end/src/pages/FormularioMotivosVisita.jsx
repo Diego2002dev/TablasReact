@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { Fragment, useEffect, useState } from 'react'
-import "../components/motivos_visita/motivosVisita.css"
+import styles from "../components/motivos_visita/motivosVisita.module.css"
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import instancia from "../../config/Instancia";
 import { validarNombre } from "../validaciones/expresionesRegulares";
@@ -28,14 +28,17 @@ const FormularioMotivosVisita = () => {
          ******************************/
 
 
+      
 
       useEffect(() => {
         if (location.pathname !== '/motivos/crear' && id) {
+          extraerIds(id);
           establecerValores();
         }
-        
-      }, [location.pathname]);
+      }, []);
 
+
+ 
 
 
       // Preparar los datos del formulario  
@@ -44,7 +47,6 @@ const FormularioMotivosVisita = () => {
       });
       
       
-
       //const idBotonSeleccionado = id;
 
 
@@ -76,6 +78,19 @@ const FormularioMotivosVisita = () => {
           }
         };
 
+        const extraerIds = async (id) => {
+
+          await instancia("motivos_visita/consultar.php")
+          .then( response => {
+            const ids = response.data.some(dato => dato.id === Number(id));
+            if(!ids){
+              navigate("../motivos/");
+            }
+          })
+          .catch( error => {
+            console.log(error);
+          })
+      }
 
         const handleInputChange = (e) => {
           const { name, value } = e.target;
@@ -95,12 +110,14 @@ const FormularioMotivosVisita = () => {
 
 
 
+
+
+
         /******************************
          *                            *
          *     ENVÍO DE FORMULARIO    *
          *                            *
          ******************************/
-
       const enviarFormulario = (url) => (e) => {
           e.preventDefault();
 
@@ -145,13 +162,13 @@ const FormularioMotivosVisita = () => {
       <Fragment>
       {location.pathname === '/motivos/crear' ? (
         <div className="contenedorFormulario">
-          <form id="FormularioCrear" onSubmit={enviarFormulario("motivos_visita/crearFormularioMotivos.php")}>
+          <form id={styles.FormularioCrear} onSubmit={enviarFormulario("motivos_visita/crearFormularioMotivos.php")}>
             
-              <h2 className="h2Formulario">Formulario</h2>
-              <h3 className="h3Formulario">Motivos de visita</h3>
+              <h2 className={styles.h2Formulario}>Formulario</h2>
+              <h3 className={styles.h3Formulario}>Motivos de visita</h3>
               <input className="bloqueadoFormulario" placeholder="ID" readOnly/>
               <input
-                name="nombre"   
+                name="nombre"
                 placeholder="Nombre"
                 value={formData.nombre}
                 onChange={handleInputChange}
@@ -160,20 +177,20 @@ const FormularioMotivosVisita = () => {
               />
               <input className="bloqueadoFormulario" placeholder="Activo" readOnly/>
             
-            <button className="botonFormulario" name="crear" type="submit">Crear registro</button>
+            <button id={styles.botonFormularioMotivos} className="botonFormulario" name="crear" type="submit">Crear registro</button>
           </form>
         </div>
         ) : (
           <div className="contenedorFormulario">
-            <form id="FormularioModificar" onSubmit={enviarFormulario("motivos_visita/modificarFormularioMotivos.php")}>
+            <form onSubmit={enviarFormulario("motivos_visita/modificarFormularioMotivos.php")}>
             
-              <h2 className="h2Formulario">Formulario</h2>
-              <h3 className="h3Formulario">Motivos de visita</h3>
+              <h2 className={styles.h2Formulario}>Formulario</h2>
+              <h3 className={styles.h3Formulario}>Motivos de visita</h3>
               <input className="bloqueadoFormulario" placeholder={formData.idBoton} readOnly/>
               <input
                 name="nombre"
                 placeholder="Nombre"
-                value={formData.nombre} 
+                value={formData.nombre || ""} 
                 onChange={handleInputChange}
                 className={errores.nombre ? "errorInput" : ""}
                 required
@@ -188,7 +205,7 @@ const FormularioMotivosVisita = () => {
                 <option value="Baja">Baja</option>
               </select>
             
-              <button className="botonFormulario" name="modificar" type="submit">Modificar registro</button>
+              <button id={styles.botonFormularioMotivos} className="botonFormulario" name="modificar" type="submit">Modificar registro</button>
             </form>
           </div>
         )}
@@ -199,10 +216,6 @@ const FormularioMotivosVisita = () => {
 export default FormularioMotivosVisita;
 
 
-
-
-
-// 
 // X Establecer el objeto formData como un useState
 // X Al darle al boton modificar, se muestre en el input el nombre del id del boton pulsado
 // X Dos archivos (MODIFICAR Y CREAR)

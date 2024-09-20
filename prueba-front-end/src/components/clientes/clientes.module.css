@@ -1,0 +1,387 @@
+
+
+/******************************
+ *                            *
+ *     TITULO DE LA TABLA     *
+ *                            *
+ ******************************/
+
+/* Estilo para los elementos h1 (usualmente los títulos principales) */
+#h1Clientes {
+    background-color: rgb(30, 247, 20);
+}
+
+
+/******************************
+ *                            *
+ *           TABLA            *
+ *                            *
+ ******************************/
+
+
+#contenedorTablaClientes {
+    position: relative;
+    text-align: center;
+    border-spacing: 1px;
+    left: 4.84vw;
+    top: 2vh;
+    max-width: 90vw;
+    max-height: 49.45vh;
+    margin: auto;
+    overflow-x: wrap;
+    overflow-y: auto;
+}
+
+
+   
+#contenedorTablaClientes::-webkit-scrollbar {
+    display: none;
+}
+    
+
+
+
+.tdClientes{
+    white-space: nowrap;
+    border: 3px solid black;
+    max-width: 30vw;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+
+
+#contenedorTablaClientes tbody tr:nth-child(even) .tdClientes {
+    background-color: rgb(110, 215, 80);
+}
+
+
+#contenedorTablaClientes tbody tr:nth-child(odd) .tdClientes {
+    background-color: rgb(0, 255, 170);
+}
+
+
+
+
+
+/******************************
+ *                            *
+ *          BOTONES           *
+ *                            *
+ ******************************/
+
+
+#botonCrearClientes{
+    position: relative;
+    left: 9.4%;
+    background-color: rgb(30, 247, 20);
+    margin-top: 1.55%;
+    width: 20%;
+    height: 40px;
+    font-size: 22px;
+    font-family: 'Courier New';
+    font-weight: 700;
+}
+
+
+.botonClientes{
+    position: relative;
+    background-color: rgb(30, 247, 20);
+    font-size: 14px;
+    font-family: "Courier New";
+    font-weight: 600;
+    left: 1%;
+}
+
+
+.botonClientes:hover, #botonCrearClientes:hover{
+    background-color: rgb(210, 210, 210);
+    border: 3px solid rgb(30, 247, 20);
+    color: rgb(30, 247, 20);
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+/******************************
+ *                            *
+ * FORMULARIO Y SUS ELEMENTOS *
+ *                            *
+ ******************************/
+
+
+.h2FormularioClientes{  
+    margin-top: 3%;
+    margin-bottom: 1%;
+}
+
+.h3FormularioClientes{  
+    margin-top: 1%;
+    margin-bottom: 4%;
+}
+
+.contenedorFormularioClientes{
+    background-color: rgb(110, 215, 80);
+    width: 70vw;
+    height: 80vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+    box-shadow: 4px 8px 5px rgba(0, 0, 0, 0.5);
+    border: 2px solid black;
+    margin: auto;
+    margin-top: 5%;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.contenedorFormularioClientesScroll{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.grupoForm {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.grupoForm div, 
+.grupoForm label{
+    flex: 0 0 26%;
+    margin: 0 auto;
+}
+.grupoForm input{
+    width: 99%;
+    height: 3.1vh;
+    text-align: center;
+
+    font-size: 1.2rem;
+}
+.grupoForm input[type="date"]{
+    height: 3.3vh;
+    width: 102%;
+}
+.grupoForm input[type="date"]:hover{
+    outline: 2px solid black;
+    cursor: pointer;
+}
+
+.grupoForm select{
+    position: relative;
+    width: 102%;
+    height: 3.56vh;
+    text-align: center;
+    cursor: pointer;
+}
+.grupoForm select option{
+    width: min-content;
+    text-overflow: ellipsis;
+}
+
+
+#divCheckBox label input:focus,
+#divCheckBox label input:hover{
+    outline: none;
+}
+
+.grupoForm input,
+.grupoForm select{
+    transition: transform 0.18s; 
+}
+
+.grupoForm input:focus,
+.grupoForm input:hover,
+.grupoForm select:focus,
+.grupoForm select:hover,
+.inputObservaciones:hover{
+    transform: scale(1.15, 1.05);
+}
+/* .grupoForm select option{
+    width: 50px;
+    white-space:pre-wrap;
+    word-wrap: break-word;
+} */
+
+
+/* .grupoForm select:hover,
+.grupoForm input:hover {
+} */
+
+.grupoForm #selectProfesionesClientes{
+    background-color: rgb(230, 40, 90);
+}
+.grupoForm #selectProvinciasClientes{
+    background-color: rgb(30, 247, 20);
+}
+.grupoForm #selectMotivosClientes{
+    background-color: rgb(100, 180, 240);
+}
+
+.grupoForm #selectProfesionesClientes option:nth-child(even){
+    background-color: rgb(250, 120, 120);
+}
+.grupoForm #selectProfesionesClientes option:nth-child(odd){
+    background-color: rgb(255, 35, 35);
+}
+
+.grupoForm #selectProvinciasClientes option:nth-child(odd){
+    background-color: rgb(110, 215, 80);
+}
+.grupoForm #selectProvinciasClientes option:nth-child(even){
+    background-color: rgb(0, 255, 170);
+}
+
+.grupoForm #selectMotivosClientes option:nth-child(odd){
+    background-color: rgb(60, 226, 226);
+}
+.grupoForm #selectMotivosClientes option:nth-child(even){
+    background-color: lightblue;
+}
+
+
+
+
+/**********************/
+.fecha_nacimiento{
+    font-size: 1.2rem;
+}
+/**********************/
+
+
+
+.contenedorFormularioClientes label{
+margin-top: 3%;
+margin-bottom: 1%;
+font-weight: 700;
+}
+
+.contenedorFormularioClientesScroll::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+.contenedorFormularioClientes button{
+    width: 78%;
+    position: relative;
+    margin: 0;
+    height: 4.8vh;
+    background-color: rgb(30, 247, 20);
+    font-size: 22px;
+    font-family: 'Courier New';
+    font-weight: 700;
+    top: 2vh;
+}
+
+.contenedorFormularioClientes button:hover{
+    background-color: rgb(210, 210, 210);
+    border: 3px solid rgb(30, 247, 20);
+    color: rgb(30, 247, 20);
+    cursor: pointer;
+}
+
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#divCheckBox{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    
+
+    /* display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center; */
+
+    background-color: rgb(30, 247, 20);
+    width: 80vw;
+    height: 16vh;
+    margin: auto;
+    border: 3px solid black;
+}
+
+#divCheckBox label{
+    margin: 0.15vw 0.9vw;
+    font-size: 1.1rem;
+    margin-top: 0.3vw;
+}
+#divCheckBox label input{
+    position: relative;
+    right: .1vw;
+    top: .1vw;
+    height: initial;
+}
+#divCheckBox .checkedBox{
+    opacity: 0.6;  
+    
+    user-select: none;
+    -webkit-user-select: none;  /* Para compatibilidad con navegadores webkit (Chrome, Safari) */
+    -moz-user-select: none;    /* Para Firefox */
+    -ms-user-select: none;     /* Para IE y Edge */
+}
+#divCheckBox .notCheckedBox{
+    
+    user-select: none;
+    -webkit-user-select: none; /* Para compatibilidad con navegadores webkit (Chrome, Safari) */
+    -moz-user-select: none;    /* Para Firefox */
+    -ms-user-select: none;     /* Para IE y Edge */
+}
+
+
+
+.inputObservaciones{
+    width: 17.74vw;
+    height: 2.56vh;
+    position: relative;
+    transition: 0.18s;
+    transition-property: transform;
+    resize: none;
+    border: 1px solid black;
+    transform-origin: center;
+    z-index: 1;
+}
+
+.inputObservaciones:focus{
+    transform: scale(2);
+    transform-origin: top;
+    outline: 0px solid black;
+    font-size: 0.5rem;
+}
+
+.inputObservaciones:hover{
+    outline: 2px solid black;
+}
+
+.inputObservaciones:focus:hover{
+    outline: none;
+}
+
+
+/*
+
+·El input desborda por la longitud del contenido:
+-Hacer elipsis
+
+·En los select de los clientes el texto desborda sin elipsis:
+-Poner elipsis
+
+·Hacer mas ancho el formulario de manera que se vean tres columnas de inputs
+-Id arriba del todo
+
+*/

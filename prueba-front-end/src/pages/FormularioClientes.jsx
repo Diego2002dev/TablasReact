@@ -1,7 +1,8 @@
-import React, { Fragment, useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import React, { Fragment, useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import instancia from '../../config/Instancia';
 import { alertaSwal } from '../validaciones/funciones';
+import styles from "../components/clientes/clientes.module.css";
 import { validarApellidos, validarCiudad, validarCodigoPostal, validarDireccion, validarDni, validarEmail, validarFechaNacimiento,
          validarNombreCliente, validarTFijo, validarTMovil }
          from '../validaciones/expresionesRegulares';
@@ -9,6 +10,7 @@ import { validarApellidos, validarCiudad, validarCodigoPostal, validarDireccion,
 
 export default function FormularioClientes() {
     
+
     const location = useLocation();
     const navigate = useNavigate();
     const {id} = useParams();
@@ -43,9 +45,9 @@ export default function FormularioClientes() {
        ciudad: "",
        provincia: "",
        fecha_nacimiento: "",
-       sexo: "Hombre",
-       mailing: "No", 
-       sms: "No",
+       sexo: "",
+       mailing: "", 
+       sms: "",
        motivo_visita: "",
        observaciones: "",
        estado: "",
@@ -55,33 +57,53 @@ export default function FormularioClientes() {
 
 
 
-
-
-
-
     const [nombresProfesiones, setNombresProfesiones] = useState([]);
     const [nombresProvincias, setNombresProvincias] = useState([]);
     const [nombresMotivos, setNombresMotivos] = useState([]);
 
     // Función genérica para obtener nombres de las demas tablas
-    const fetchNombres = (api, setState) => {
-        instancia(api)
-        .then(response => {
+    
 
-            const nombres = response.data.map(dato => dato.nombre);
-            nombres.sort((a, b) => {
-                return a.localeCompare(b, undefined, { sensitivity: 'base' });
-                });
-                
-            setState(nombres);
+
+
+
+
+
+    useEffect(() => {
+        if (location.pathname !== "/clientes/crear" && id) {
+            extraerIds(id);
+            extraerValores();
+        }
+        fetchNombres("clientes/extraerActivosTablaProfesiones.php", setNombresProfesiones);
+        fetchNombres("provincias/consultar.php", setNombresProvincias);
+        fetchNombres("clientes/extraerActivosTablaMotivosVisita.php", setNombresMotivos);
+        // nombreDeOtrasTablasAPartirDelId("profesiones/devolverCampos.php", datosFormulario.profesion);
+    }, [])
+
+
+    
+
+
+
+    /******************************
+     *                            *
+     *          FUNCIONES         *
+     *                            *
+     ******************************/
+
+    const extraerIds = async (id) => {
+
+        await instancia("clientes/consultar.php")
+        .then(response => {
+            const ids = response.data.some( dato => dato.id === Number(id))
+            if(!ids){
+                navigate("/clientes");
+            }
         })
         .catch(error => {
-            console.log("Error: " + error);
-        });
-    };
-
-
-
+            console.log(error);
+        })
+    }
 
     const extraerValores =  () => {
 
@@ -118,31 +140,40 @@ export default function FormularioClientes() {
             
         })
         .catch (error => {
-            console.log(`Error ${error}`)
+            console.log(`Error ${error}`);
         })
     }
 
+    const fetchNombres = (api, setState) => {
+        instancia(api)
+        .then(response => {
+
+            const nombres = response.data.map(dato => dato.nombre);
+            // nombres.forEach((nombre, index) => {
+            //     const nombreSplit = nombre.split("");
+            //     if(nombreSplit.length > 21){
+            //             while(nombreSplit.length >= 21){
+            //                 nombreSplit.pop();
+            //     }
+            //         const result = nombreSplit.join("") + "...";
+
+            //         nombres[index] = result;
+            //     }
+            // })
+            
+            nombres.sort((a, b) => {
+                return a.localeCompare(b, undefined, { sensitivity: "base" });
+            });
 
 
-    if (location.pathname !== "/clientes/crear" && id) {
-        useEffect(() => {
-            extraerValores();
-        }, [])
-    }
 
-
-    useEffect(() => {
-        // if (location.pathname !== "/clientes/crear" && id) {
-        //     extraerValores();
-        // }
-        fetchNombres("clientes/extraerActivosTablaProfesiones.php", setNombresProfesiones);
-        fetchNombres("provincias/consultar.php", setNombresProvincias);
-        fetchNombres("clientes/extraerActivosTablaMotivosVisita.php", setNombresMotivos);
-        // nombreDeOtrasTablasAPartirDelId("profesiones/devolverCampos.php", datosFormulario.profesion);
-    }, [])
-
-    
-
+            
+            setState(nombres);
+        })
+        .catch(error => {
+            console.log("Error: " + error);
+        });
+    };
 
 
     const handleInputChange = (e) => {
@@ -161,9 +192,13 @@ export default function FormularioClientes() {
             [name]: value
         }));
     }
+
     
-
-
+/******************************
+ *                            *
+ *     ENVIAR FORMULARIO      *
+ *                            *
+ ******************************/
     const enviarFormulario = (url) => (e) => {
         e.preventDefault();
 
@@ -188,7 +223,7 @@ export default function FormularioClientes() {
                 }));
             }
         })
- 
+
         if(!hayError){
             instancia.post(url, datosFormulario)
             .then( response => {
@@ -208,18 +243,18 @@ export default function FormularioClientes() {
     <Fragment>
         {location.pathname == "/clientes/crear" ? (
 
-            <div className="contenedorFormularioClientes">
-                <form onSubmit={enviarFormulario("clientes/crearFormularioClientes.php")}>
-                <h2 className="h2FormularioClientes">Formulario</h2>
-                <h3 className="h3FormularioClientes">Clientes</h3>
-                    <div className="contenedorFormularioClientesScroll">
+            
+                <form className={styles.contenedorFormularioClientes} onSubmit={enviarFormulario("clientes/crearFormularioClientes.php")}>
+                <h2 className={styles.h2FormularioClientes}>Formulario</h2>
+                <h3 className={styles.h3FormularioClientes}>Clientes</h3>
+                    <div className={styles.contenedorFormularioClientesScroll}>
 
-                        <div className="grupoForm">
+                        <div className={styles.grupoForm}>
 
-                            <div>
+                            {/* <div>
                             <label>ID</label>
                             <input className = "bloqueadoFormulario" readOnly placeholder="ID"></input>
-                            </div>
+                            </div> */}
 
                              <div>
                             <label>Nombre</label>
@@ -267,7 +302,7 @@ export default function FormularioClientes() {
                             </div>
 
                             <div>
-                            <label className="fecha_nacimiento">Fecha de nacimiento</label>
+                            <label className={styles.fecha_nacimiento}>Fecha de nacimiento</label>
                             <input name="fecha_nacimiento" onChange={handleInputChange} className={errores.fecha_nacimiento ? "errorInput" : ""} type="date" required></input>
                             </div>
 
@@ -295,17 +330,16 @@ export default function FormularioClientes() {
                                 <option value="Si">Si</option>
                             </select>
                             </div>
-                            
-                            <div>
-                            <label>Estado</label>
-                            <input className="bloqueadoFormulario" placeholder="Activo" readOnly></input>
-                            </div>
 
                             <div>
                             <label>Observaciones</label>
-                            <input name="observaciones" onChange={handleInputChange} value={datosFormulario.observaciones}></input>
+                            <textarea className={styles.inputObservaciones} name="observaciones" onChange={handleInputChange} value={datosFormulario.observaciones}></textarea>
                             </div>
 
+                            <div>
+                            <label>Estado</label>
+                            <input className={styles.bloqueadoFormulario} placeholder="Activo" readOnly></input>
+                            </div>
 
                             <div>
                                 <label>Profesión</label>
@@ -314,6 +348,7 @@ export default function FormularioClientes() {
                                 onChange={handleSelectChange}
                                 className={errores.profesion ? "errorInput" : ""}
                                 value={datosFormulario.profesion}
+                                id={styles.selectProfesionesClientes}
                                 >
                                     {nombresProfesiones.map((nombre, index) => 
                                         <option key={index} value={nombre}>{nombre}</option>
@@ -329,6 +364,7 @@ export default function FormularioClientes() {
                                 onChange={handleSelectChange}
                                 className={errores.provincia ? "errorInput" : ""}
                                 value={datosFormulario.provincia}
+                                id={styles.selectProvinciasClientes}
                                 >
                                     {nombresProvincias.map((nombre, index) => 
                                         <option key={index} value={nombre}>{nombre}</option>
@@ -338,18 +374,19 @@ export default function FormularioClientes() {
                             </div>
 
                             <div>
-                            <label>Motivo de visita</label>
-                            <select
-                            name="motivo_visita"
-                            onChange={handleSelectChange}
-                            className={errores.motivo_visita ? "errorInput" : ""}
-                            value={datosFormulario.motivo_visita}
-                            >
-                                {nombresMotivos.map((nombre, index) => 
-                                    <option key={index} value={nombre}>{nombre}</option>
-                                    )
-                                }
-                            </select>
+                                <label>Motivo de visita</label>
+                                <select
+                                name="motivo_visita"
+                                onChange={handleSelectChange}
+                                className={errores.motivo_visita ? "errorInput" : ""}
+                                value={datosFormulario.motivo_visita}
+                                id={styles.selectMotivosClientes}
+                                >
+                                    {nombresMotivos.map((nombre, index) => 
+                                        <option key={index} value={nombre}>{nombre}</option>
+                                        )
+                                    }
+                                </select>
                             </div>
 
                         </div>
@@ -358,73 +395,71 @@ export default function FormularioClientes() {
                         {/* <label>Hora</label>
                         <input onChange={handleInputChange} required></input>  */}
                     </div>
-                    <button type="submit">Crear registro</button>
+                    <button className="botonFormulario" type="submit">Crear registro</button>
                 </form>
-            </div>
-
+            
         ) : (
-
-            <div className="contenedorFormularioClientes">
-            <form onSubmit={enviarFormulario("clientes/modificarFormularioClientes.php")}>
-            <h2 className="h2FormularioClientes">Formulario</h2>
-            <h3 className="h3FormularioClientes">Clientes</h3>
-                <div className="contenedorFormularioClientesScroll">
-                    <div className="grupoForm">
-                        <div>
+            
+            <form className={styles.contenedorFormularioClientes} onSubmit={enviarFormulario("clientes/modificarFormularioClientes.php")}>
+            <h2 className={styles.h2FormularioClientes}>Formulario</h2>
+            <h3 className={styles.h3FormularioClientes}>Clientes</h3>
+                <div className={styles.contenedorFormularioClientesScroll}>
+                    <div className={styles.grupoForm}>
+                        {/* <div>
                         <label>ID</label>
                         <input className = "bloqueadoFormulario" readOnly placeholder={id}></input>
-                        </div>
+                        </div> */}
 
                         <div>
                         <label>Nombre</label>
-                        <input name="nombre" onChange={handleInputChange} className={errores.nombre ? "errorInput" : ""} value={datosFormulario.nombre} required></input>
+                        <input name="nombre" onChange={handleInputChange} className={errores.nombre ? "errorInput" : ""} value={datosFormulario.nombre || ""} required></input>
                         </div>
 
                         <div>
                         <label>Apellidos</label>
-                        <input name="apellidos" onChange={handleInputChange} className={errores.apellidos ? "errorInput" : ""} value={datosFormulario.apellidos} required></input>
+                        <input name="apellidos" onChange={handleInputChange} className={errores.apellidos ? "errorInput" : ""} value={datosFormulario.apellidos || ""} required></input>
                         </div>
 
                         <div>
                         <label>DNI</label>
-                        <input name="dni" onChange={handleInputChange} className={errores.dni ? "errorInput" : ""} value={datosFormulario.dni} required></input>
+                        <input name="dni" onChange={handleInputChange} className={errores.dni ? "errorInput" : ""} value={datosFormulario.dni || ""} required></input>
                         </div>
 
                         <div>
                         <label>Email</label>
-                        <input name="email" onChange={handleInputChange} className={errores.email ? "errorInput" : ""} value={datosFormulario.email} type="email" required ></input>
+                        <input name="email" onChange={handleInputChange} className={errores.email ? "errorInput" : ""} value={datosFormulario.email || ""} type="email" required ></input>
                         </div>
 
                         <div>
                         <label>Teléfono Fijo</label>
-                        <input name="telefono_fijo" type="number" onChange={handleInputChange}  className={errores.telefono_fijo ? "errorInput" : ""} value={datosFormulario.telefono_fijo} required></input>
+                        <input name="telefono_fijo" type="number" onChange={handleInputChange}  className={errores.telefono_fijo ? "errorInput" : ""} value={datosFormulario.telefono_fijo || ""} required></input>
                         </div>
 
                         <div>
                         <label>Teléfono Movil</label>
-                        <input name="telefono_movil" type="number" onChange={handleInputChange} className={errores.telefono_movil ? "errorInput" : ""} value={datosFormulario.telefono_movil} required></input>
+                        <input name="telefono_movil" type="number" onChange={handleInputChange} className={errores.telefono_movil ? "errorInput" : ""} value={datosFormulario.telefono_movil || ""} required></input>
                         </div> 
                         
                         
                         <div>
                         <label>Dirección</label>
-                        <input name="direccion" onChange={handleInputChange}  className={errores.direccion ? "errorInput" : ""} value={datosFormulario.direccion} required></input>
+                        <input name="direccion" onChange={handleInputChange}  className={errores.direccion ? "errorInput" : ""} value={datosFormulario.direccion || ""} required></input>
                         </div>
 
                         <div>
                         <label>Código postal</label>
-                        <input name="codigo_postal" type="number" onChange={handleInputChange} className={errores.codigo_postal ? "errorInput" : ""} value={datosFormulario.codigo_postal} required></input>
+                        <input name="codigo_postal" type="number" onChange={handleInputChange} className={errores.codigo_postal ? "errorInput" : ""} value={datosFormulario.codigo_postal || ""} required></input>
                         </div>
 
                         <div>
                         <label>Ciudad</label>
-                        <input name="ciudad" onChange={handleInputChange} value={datosFormulario.ciudad} className={errores.ciudad ? "errorInput" : ""} required></input>
+                        <input name="ciudad" onChange={handleInputChange} value={datosFormulario.ciudad || ""} className={errores.ciudad ? "errorInput" : ""} required></input>
                         </div> 
                         
 
                         <div>
-                        <label className="fecha_nacimiento">Fecha de nacimiento</label>
-                        <input type="date" name="fecha_nacimiento" onChange={handleInputChange} className={errores.fecha_nacimiento ? "errorInput" : ""} value={datosFormulario.fecha_nacimiento} required></input>
+                        <label className={styles.fecha_nacimiento}>Fecha de nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" onChange={handleInputChange} className={errores.fecha_nacimiento ? "errorInput" : ""} value={datosFormulario.fecha_nacimiento || ""} required></input>
                         </div>
 
                         <div>
@@ -453,18 +488,18 @@ export default function FormularioClientes() {
                         </div>
 
                         <div>
+                        <label>Observaciones</label>
+                        <textarea className={styles.inputObservaciones} name="observaciones" onChange={handleInputChange} value={datosFormulario.observaciones || ""}></textarea>
+                        </div>
+
+                        <div>
                         <label>Estado</label>
                         <select name="estado" onChange={handleSelectChange} value={datosFormulario.estado}>
                             <option value="Activo">Activo</option>
                             <option value="Baja">Baja</option>
                         </select>
                         </div>
-
-                        <div>
-                        <label>Observaciones</label>
-                        <input name="observaciones" onChange={handleInputChange} value={datosFormulario.observaciones}></input>
-                        </div>
-
+                        
                         <div>
                         <label>Profesión</label>
                         <select
@@ -472,12 +507,13 @@ export default function FormularioClientes() {
                         onChange={handleSelectChange}
                         className={errores.profesion ? "errorInput" : ""}
                         value={datosFormulario.profesion}
+                        id={styles.selectProfesionesClientes}
                         >
-                            <option className="primeraOpcionSelect" value={datosFormulario.profesion}>{datosFormulario.profesion}</option>
+                            <option id={1} className={styles.primeraOpcionSelect} value={datosFormulario.profesion}>{datosFormulario.profesion}</option>
                             {nombresProfesiones.map((nombre, index) => 
 
                                 nombre !== datosFormulario.profesion ? (
-                                    <option key={index} value={nombre}>{nombre}</option>
+                                    <option key={index} id={index + 2} value={nombre}>{nombre}</option>
                                 )
                                 : null
                                 )
@@ -492,17 +528,18 @@ export default function FormularioClientes() {
                         onChange={handleSelectChange}
                         className={errores.provincia ? "errorInput" : ""}
                         value={datosFormulario.provincia}
+                        id={styles.selectProvinciasClientes}
                         >
-                            <option className="primeraOpcionSelect" value={datosFormulario.provincia}>{datosFormulario.provincia}</option>
+                            <option className={styles.primeraOpcionSelect} value={datosFormulario.provincia}>{datosFormulario.provincia}</option>
                             {nombresProvincias.map((nombre, index) => 
                                     nombre !== datosFormulario.provincia ? (
                                         <option key={index} value={nombre}>{nombre}</option>
                                     ) : null
                                 )
-                            }  
+                            }
                         </select>
                         </div>
-
+                        
                         <div>
                         <label>Motivo de visita</label>
                         <select
@@ -510,8 +547,9 @@ export default function FormularioClientes() {
                         onChange={handleSelectChange}
                         className={errores.motivo_visita ? "errorInput" : ""}
                         value={datosFormulario.motivo_visita}
+                        id={styles.selectMotivosClientes}
                         >
-                            <option className="primeraOpcionSelect" value={datosFormulario.motivo_visita}>{datosFormulario.motivo_visita}</option>
+                            <option className={styles.primeraOpcionSelect} value={datosFormulario.motivo_visita}>{datosFormulario.motivo_visita}</option>
                             {nombresMotivos.map((nombre, index) => 
                                     nombre !== datosFormulario.motivo_visita ? (
                                         <option key={index} value={nombre}>{nombre}</option>
@@ -528,9 +566,9 @@ export default function FormularioClientes() {
                     {/* <label>Hora</label>
                     <input onChange={handleInputChange} required></input>  */}
                 </div>
-                <button type="submit">Modificar registro</button>
+                <button className="botonFormulario" type="submit">Modificar registro</button>
             </form>
-        </div>
+        
 
         )}
 </Fragment>

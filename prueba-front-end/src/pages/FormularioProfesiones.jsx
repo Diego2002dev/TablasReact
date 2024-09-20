@@ -1,9 +1,10 @@
-import React, { Fragment, useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import React, { Fragment, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import instancia from '../../config/Instancia';
 import "../validaciones/funciones";
 import { alertaSwal } from '../validaciones/funciones';
 import { validarNombre } from '../validaciones/expresionesRegulares';
+import styles from "../components/profesiones/profesiones.module.css";
 
 function FormularioProfesiones() {
 
@@ -28,6 +29,7 @@ function FormularioProfesiones() {
 
     useEffect(() => {
       if (location.pathname !== '/profesiones/crear' && id) {
+        extraerIds(id);
         establecerValores();
       }
       
@@ -56,6 +58,20 @@ function FormularioProfesiones() {
        *                            *
        ******************************/
 
+      const extraerIds = async (id) => {
+
+        await instancia("profesiones/consultar.php")
+        .then(response => {
+          
+          const ids = response.data.some(dato => dato.id === Number(id));
+          if(!ids){
+            navigate("/profesiones");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+      }
 
       const establecerValores = () => {
         instancia.post('profesiones/devolverCampos.php', { id })
@@ -95,7 +111,6 @@ function FormularioProfesiones() {
          *     ENVÍO DE FORMULARIO    *
          *                            *
          ******************************/
-
     const enviarFormulario = (url) => (e) => {
       e.preventDefault();
 
@@ -146,10 +161,10 @@ function FormularioProfesiones() {
   return (
     <Fragment>
         {location.pathname == "/profesiones/crear" ? (
-            <div className="contenedorFormulario" id="contenedorFormularioCrearProfesiones">
+            <div className="contenedorFormulario" id={styles.contenedorFormularioCrearProfesiones}>
                 <form onSubmit = {enviarFormulario("profesiones/crearFormularioProfesiones.php")}>
-                    <h2 className="h2Formulario">Formulario</h2>
-                    <h3 className="h3Formulario">Profesiones</h3>
+                    <h2 className={styles.h2Formulario}>Formulario</h2>
+                    <h3 className={styles.h3Formulario}>Profesiones</h3>
                     <input
                         name = "id"
                         placeholder = "ID"
@@ -161,19 +176,19 @@ function FormularioProfesiones() {
                         placeholder = "Nombre"
                         value = {datosFormulario.nombre}
                         onChange = {handleInputChange}
-                        className= {errores.nombre ? "errorInput" : ""}
+                        className = {errores.nombre ? "errorInput" : ""}
                         required
                     />
-                    <input className="bloqueadoFormulario" placeholder="Activo" readOnly/>
-                    <button type="submit" className="botonFormularioProfesiones">Crear registro</button>
+                    <input className={styles.bloqueadoFormulario} placeholder="Activo" readOnly/>
+                    <button type="submit" id={styles.botonFormularioProfesiones} className="botonFormulario">Crear registro</button>
 
                 </form>
             </div>
         ) : (
-            <div className="contenedorFormulario" id="contenedorFormularioModificarProfesiones">
+            <div className="contenedorFormulario" id={styles.contenedorFormularioModificarProfesiones}>
                 <form onSubmit = {enviarFormulario("profesiones/modificarFormularioProfesiones.php")}>
-                    <h2 className="h2Formulario">Formulario</h2>
-                    <h3 className="h3Formulario">Profesiones</h3>
+                    <h2 className={styles.h2Formulario}>Formulario</h2>
+                    <h3 className={styles.h3Formulario}>Profesiones</h3>
                     <input
                         name = "id"
                         placeholder = {id}
@@ -183,7 +198,7 @@ function FormularioProfesiones() {
                     <input
                         name = "nombre"
                         placeholder = "Nombre"
-                        value = {datosFormulario.nombre}
+                        value = {datosFormulario.nombre || ""}
                         onChange = {handleInputChange}
                         className= {errores.nombre ? "errorInput" : ""}
                         required
@@ -197,7 +212,7 @@ function FormularioProfesiones() {
                         <option value="Activo">Activo</option>
                         <option value="Baja">Baja</option>
                     </select>
-                    <button type="submit" className="botonFormularioProfesiones">Modificar registro</button>
+                    <button type="submit" id={styles.botonFormularioProfesiones} className="botonFormulario">Modificar registro</button>
                 </form>
             </div>
             ) 

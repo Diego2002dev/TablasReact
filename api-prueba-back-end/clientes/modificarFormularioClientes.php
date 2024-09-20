@@ -142,7 +142,6 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
 }
 
 
-// En modificar, mostrar correctamente el valor de select del campo a modificar
-// ERROR: Solo se muestra el mensaje "actual" si se modifican los tres campos de las demas tablas
+
 
 ?>
