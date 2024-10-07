@@ -1,14 +1,14 @@
-import React, { Fragment } from 'react'
+/* eslint-disable react/prop-types */
 import { Link } from "react-router-dom"
 import styles from "./motivosVisita.module.css"
 
-const MotivoVisita = ({motivo}) => {
+const MotivoVisita = ({motivo, onRowClick, rowSeleccionada}) => {
 
   const{id, nombre, estado} = motivo
 
     return (
-    <Fragment>
-      <tr>
+    <>
+      <tr onDoubleClick={() => onRowClick(id)} className={rowSeleccionada.motivos[id] ? styles.filaSeleccionada : "" }>
         <td className={styles.td}>{id}</td>
         <td className={styles.td}>{nombre}</td>
         <td className={styles.td}>{estado}</td>
@@ -18,7 +18,7 @@ const MotivoVisita = ({motivo}) => {
           </Link>
         </td>
       </tr>
-    </Fragment>
+    </>
   )
 }
 

@@ -64,6 +64,31 @@ function quitarEspaciosSobrantes($string){
 
 
 
+function validarDuplicidadDNI($conexion, $dni){
+    $query = $conexion->prepare("SELECT COUNT(*) as count FROM clientes WHERE dni = ?");
+    $query->bind_param("s", $dni);
+    $query->execute();
+    $result = $query->get_result();
+    $row = $result->fetch_assoc();
+    
+    if($row["count"] > 0){
+        return true;
+    }
+    return false;
+}
+
+function comprobarCampos($conexion, $id, $campo){
+    $query = $conexion->prepare("SELECT ".$campo." FROM clientes WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $result = $query->get_result();
+    $row = $result->fetch_assoc();
+
+    return $row[$campo];
+}
+
+
+
 
 $datos = file_get_contents("php://input");
 $datosJSON = json_decode($datos);
@@ -117,6 +142,13 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
 
     $response = [];
 
+    if(validarDuplicidadDNI($conexion, $dni) && comprobarCampos($conexion, $id, "dni") != $dni){
+        $response["mensaje"] = "El DNI ya existe";
+        $response["tipo"] = "error";
+    }
+
+    else{
+
     $profesion = deNombreAId($conexion, $profesion, "profesiones");
     $provincia = deNombreAId($conexion, $provincia, "provincias");
     $motivo_visita = deNombreAId($conexion, $motivo_visita, "motivos_visita");
@@ -131,13 +163,14 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
                                                 $direccion, $codigo_postal, $ciudad, $provincia, $fecha_nacimiento, $sexo,
                                                 $mailing, $sms, $motivo_visita, $observaciones, $estado, $fecha_alta, $hora, $id);
 
-                                                
+
     if($query->execute()){
         $response["mensaje"] = "El cliente se ha actualizado correctamente";
         $response["tipo"] = "success";
     }
-
-    echo json_encode($response);   
+}
+    
+    echo json_encode($response);
 
 }
 

@@ -1,15 +1,13 @@
-import React, { Fragment } from 'react'
-import Profesiones from '../../pages/Profesiones';
+/* eslint-disable react/prop-types */
 import { Link } from 'react-router-dom';
 import styles from "./profesiones.module.css";
 
-function Profesion({profesion}) {
+function Profesion({profesion, onRowClick, rowSeleccionada}) {
 
-const {id, nombre, estado} = profesion; 
+const {id, nombre, estado} = profesion;
 
   return (
-    <Fragment>
-        <tr>
+        <tr onDoubleClick={() => onRowClick(id)} className={rowSeleccionada.profesiones[id] ? styles.filaSeleccionada : "" }>
             <td className={styles.tdProfesiones}>{id}</td>
             <td className={styles.tdProfesiones}>{nombre}</td>
             <td className={styles.tdProfesiones}>{estado}</td>
@@ -19,7 +17,6 @@ const {id, nombre, estado} = profesion;
                 </Link>
             </td>
         </tr>
-    </Fragment>
   )
 }
 

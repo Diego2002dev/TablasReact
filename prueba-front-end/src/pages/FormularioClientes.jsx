@@ -1,11 +1,12 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Fragment, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import instancia from '../../config/Instancia';
-import { alertaSwal } from '../validaciones/funciones';
 import styles from "../components/clientes/clientes.module.css";
-import { validarApellidos, validarCiudad, validarCodigoPostal, validarDireccion, validarDni, validarEmail, validarFechaNacimiento,
-         validarNombreCliente, validarTFijo, validarTMovil }
+import { validarApellidos, validarCiudad, validarCodigoPostal, validarDireccion, validarDni, validarEmail,
+         validarFechaNacimiento, validarMotivos, validarNombreCliente, validarProfesiones, validarProvincias,
+         validarTFijo, validarTMovil }
          from '../validaciones/expresionesRegulares';
+import { alertaSwal } from '../utils/alertaSwal';
 
 
 export default function FormularioClientes() {
@@ -18,7 +19,7 @@ export default function FormularioClientes() {
 
     const [errores, setErrores] = useState({});
 
-    const [validacionesCampo, setValidacionesCampos] = useState([
+    const [validacionesCampo] = useState([
         { campo: "nombre", validacion: validarNombreCliente },
         { campo: "apellidos", validacion: validarApellidos },
         { campo: 'email', validacion: validarEmail },
@@ -29,6 +30,9 @@ export default function FormularioClientes() {
         { campo: 'codigo_postal', validacion: validarCodigoPostal },
         { campo: 'ciudad', validacion: validarCiudad },
         { campo: 'fecha_nacimiento', validacion: validarFechaNacimiento },
+        { campo: 'profesion', validacion: validarProfesiones },
+        { campo: 'provincia', validacion: validarProvincias },
+        { campo: 'motivo_visita', validacion: validarMotivos },
     ]);
 
     const [datosFormulario, setDatosFormulario] = useState({
@@ -39,16 +43,16 @@ export default function FormularioClientes() {
        email: "",
        telefono_fijo: "",
        telefono_movil: "",
-       profesion: "",
+       profesion: "--Selecciona--",
        direccion: "",
        codigo_postal: "",
        ciudad: "",
-       provincia: "",
+       provincia: "--Selecciona--",
        fecha_nacimiento: "",
        sexo: "",
        mailing: "", 
        sms: "",
-       motivo_visita: "",
+       motivo_visita: "--Selecciona--",
        observaciones: "",
        estado: "",
        fecha_alta: "",
@@ -70,6 +74,62 @@ export default function FormularioClientes() {
 
 
     useEffect(() => {
+
+        const extraerIds = async (id) => {
+
+            await instancia("clientes/consultar.php")
+            .then(response => {
+                const ids = response.data.some( dato => dato.id === Number(id))
+                if(!ids){
+                    navigate("/clientes");
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        }
+    
+        const extraerValores =  () => {
+    
+            instancia.post("clientes/extraerValoresClientes.php", {id})
+            .then (response => {
+                setDatosFormulario(datosPrevios => ({
+                    ...datosPrevios,
+                    id: response.data.id,
+                    nombre: response.data.nombre,
+                    apellidos: response.data.apellidos,
+                    dni: response.data.dni,
+                    email: response.data.email,
+                    telefono_fijo: response.data.telefono_fijo,
+                    telefono_movil: response.data.telefono_movil,
+    
+                    profesion: response.data.profesion,
+    
+                    direccion: response.data.direccion,
+                    codigo_postal: response.data.codigo_postal,
+                    ciudad: response.data.ciudad,
+                    provincia: response.data.provincia,
+                    fecha_nacimiento: response.data.fecha_nacimiento,
+                    sexo: response.data.sexo,
+                    mailing: response.data.mailing,
+                    sms: response.data.sms,
+    
+                    motivo_visita: response.data.motivo_visita,
+    
+                    observaciones: response.data.observaciones,
+                    estado: response.data.estado,
+                    fecha_alta: response.data.fecha_alta,
+                    hora: response.data.hora,
+                }));
+                
+            })
+            .catch (error => {
+                console.log(`Error ${error}`);
+            })
+        }
+
+
+
         if (location.pathname !== "/clientes/crear" && id) {
             extraerIds(id);
             extraerValores();
@@ -78,7 +138,7 @@ export default function FormularioClientes() {
         fetchNombres("provincias/consultar.php", setNombresProvincias);
         fetchNombres("clientes/extraerActivosTablaMotivosVisita.php", setNombresMotivos);
         // nombreDeOtrasTablasAPartirDelId("profesiones/devolverCampos.php", datosFormulario.profesion);
-    }, [])
+    }, [location.pathname, id, navigate])
 
 
     
@@ -91,61 +151,10 @@ export default function FormularioClientes() {
      *                            *
      ******************************/
 
-    const extraerIds = async (id) => {
+    
 
-        await instancia("clientes/consultar.php")
-        .then(response => {
-            const ids = response.data.some( dato => dato.id === Number(id))
-            if(!ids){
-                navigate("/clientes");
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        })
-    }
-
-    const extraerValores =  () => {
-
-        instancia.post("clientes/extraerValoresClientes.php", {id})
-        .then (response => {
-            setDatosFormulario(datosPrevios => ({
-                ...datosPrevios,
-                id: response.data.id,
-                nombre: response.data.nombre,
-                apellidos: response.data.apellidos,
-                dni: response.data.dni,
-                email: response.data.email,
-                telefono_fijo: response.data.telefono_fijo,
-                telefono_movil: response.data.telefono_movil,
-
-                profesion: response.data.profesion,
-
-                direccion: response.data.direccion,
-                codigo_postal: response.data.codigo_postal,
-                ciudad: response.data.ciudad,
-                provincia: response.data.provincia,
-                fecha_nacimiento: response.data.fecha_nacimiento,
-                sexo: response.data.sexo,
-                mailing: response.data.mailing,
-                sms: response.data.sms,
-
-                motivo_visita: response.data.motivo_visita,
-
-                observaciones: response.data.observaciones,
-                estado: response.data.estado,
-                fecha_alta: response.data.fecha_alta,
-                hora: response.data.hora,
-            }));
-            
-        })
-        .catch (error => {
-            console.log(`Error ${error}`);
-        })
-    }
-
-    const fetchNombres = (api, setState) => {
-        instancia(api)
+    const fetchNombres = async (api, setState) => {
+        await instancia(api)
         .then(response => {
 
             const nombres = response.data.map(dato => dato.nombre);
@@ -165,9 +174,6 @@ export default function FormularioClientes() {
                 return a.localeCompare(b, undefined, { sensitivity: "base" });
             });
 
-
-
-            
             setState(nombres);
         })
         .catch(error => {
@@ -193,56 +199,133 @@ export default function FormularioClientes() {
         }));
     }
 
+
+
+    const [estadoCheckBoxFormulario, setEstadoCheckBoxFormulario] = useState([
+        {si: false, no: false},
+        {hombre: false, mujer: false, otro: false},
+        {si: false, no: false},
+    ])
     
+    const handleCheckFormulario = (value, name) => {
+        console.log(estadoCheckBoxFormulario);
+        if (name === "sms") {
+            setEstadoCheckBoxFormulario((prevState) => {
+                
+                const nuevoEstado = [...prevState];
+    
+                
+                nuevoEstado[0] = {
+                    si: value == "Si",
+                    no: value == "No",
+                };
+    
+                return nuevoEstado;
+            });
+        }
+        if (name === "sexo") {
+            setEstadoCheckBoxFormulario((prevState) => {
+                
+                const nuevoEstado = [...prevState];
+    
+                
+                nuevoEstado[1] = {
+                    hombre: value == "hombre",
+                    mujer: value == "mujer",
+                    otro: value == "otro",
+                };
+    
+                return nuevoEstado;
+            });
+        }
+        if (name === "mailing") {
+            setEstadoCheckBoxFormulario((prevState) => {
+                
+                const nuevoEstado = [...prevState];
+    
+                
+                nuevoEstado[2] = {
+                    si: value == "Si",
+                    no: value == "No",
+                };
+    
+                return nuevoEstado;
+            });
+        }
+    };
+
+
+
 /******************************
  *                            *
  *     ENVIAR FORMULARIO      *
  *                            *
  ******************************/
-    const enviarFormulario = (url) => (e) => {
-        e.preventDefault();
 
-        /******************************
-         *                            *
-         *      ERRORES EN FRONT      *
-         *                            *
-         ******************************/
-        setErrores({});
+    const enviarFormulario = (url) => async (e) => {
+    e.preventDefault();
+
+    
+    setErrores({});
+
+    
+    const validarCampos = () => {
         let hayError = false;
 
-        validacionesCampo.forEach (({ campo, validacion }) => {
-            if(validacion(datosFormulario[campo])){
-                if(!hayError){
-                alertaSwal("error", validacion(datosFormulario[campo]));
-                hayError = true;
-                }
-                setErrores( erroresPrevios => ({
+        validacionesCampo.forEach(({ campo, validacion }) => {
+            const mensajeError = validacion(datosFormulario[campo]);
+
+            if (mensajeError) {
+                alertaSwal("error", mensajeError);
+                if(!hayError) hayError = true;
+
+                setErrores((erroresPrevios) => ({
                     ...erroresPrevios,
                     [campo]: true,
-                    
                 }));
             }
-        })
+        });
+        return hayError;
+    };
 
-        if(!hayError){
-            instancia.post(url, datosFormulario)
-            .then( response => {
 
-                localStorage.setItem("sweetAlertData", JSON.stringify({
-                    mensaje: response.data.mensaje,
+    const validacionFormulario = async () => {
+        const hayErrores = validarCampos();
+
+        if (hayErrores) return;
+
+        try {
+            const response = await instancia.post(url, datosFormulario);
+
+            if (response.data.tipo === "error") {
+                alertaSwal("error", response.data.mensaje);
+
+                setErrores((erroresPrevios) => ({
+                    ...erroresPrevios,
+                    dni: true,
                 }));
-                navigate("/clientes");
-            })
-            .catch( error => {  
-                console.log(`ErrorCATCH: ${error}`);
-            })
+                return;
+            }
+
+            if (response.data.tipo === "success") {
+            localStorage.setItem("sweetAlertData", JSON.stringify({
+                    mensaje: response.data.mensaje,
+                })
+            );
+            navigate("/clientes");
+            }
         }
-    }
+        catch (error) {
+            console.error(`ErrorCATCH: ${error}`);
+        }
+    };
+
+    validacionFormulario();
+};
 
   return (
     <Fragment>
         {location.pathname == "/clientes/crear" ? (
-
             
                 <form className={styles.contenedorFormularioClientes} onSubmit={enviarFormulario("clientes/crearFormularioClientes.php")}>
                 <h2 className={styles.h2FormularioClientes}>Formulario</h2>
@@ -306,31 +389,7 @@ export default function FormularioClientes() {
                             <input name="fecha_nacimiento" onChange={handleInputChange} className={errores.fecha_nacimiento ? "errorInput" : ""} type="date" required></input>
                             </div>
 
-                            <div>
-                            <label>Sexo</label>
-                            <select name="sexo" onChange={handleSelectChange} value={datosFormulario.sexo}>
-                                <option value="Hombre">Hombre</option>
-                                <option value="Mujer">Mujer</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                            </div>
-
-                            <div>
-                            <label>Mailing</label>
-                            <select name="mailing" onChange={handleSelectChange} value={datosFormulario.mailing}>
-                                <option value="No">No</option>
-                                <option value="Si">Si</option>
-                            </select>
-                            </div>
-
-                            <div>
-                            <label>SMS</label>
-                            <select name="sms" onChange={handleSelectChange} value={datosFormulario.sms}>
-                                <option value="No">No</option>
-                                <option value="Si">Si</option>
-                            </select>
-                            </div>
-
+                        
                             <div>
                             <label>Observaciones</label>
                             <textarea className={styles.inputObservaciones} name="observaciones" onChange={handleInputChange} value={datosFormulario.observaciones}></textarea>
@@ -338,20 +397,22 @@ export default function FormularioClientes() {
 
                             <div>
                             <label>Estado</label>
-                            <input className={styles.bloqueadoFormulario} placeholder="Activo" readOnly></input>
+                            <input className="bloqueadoFormulario" placeholder="Activo" readOnly></input>
                             </div>
+
 
                             <div>
                                 <label>Profesión</label>
                                 <select
                                 name="profesion"
                                 onChange={handleSelectChange}
-                                className={errores.profesion ? "errorInput" : ""}
+                                className={errores.profesion ? styles.errorInputOtrasTablas : ""}
                                 value={datosFormulario.profesion}
                                 id={styles.selectProfesionesClientes}
                                 >
+                                    <option value="--Selecciona--" className={styles.selectSinSeleccionar}>--Selecciona--</option>
                                     {nombresProfesiones.map((nombre, index) => 
-                                        <option key={index} value={nombre}>{nombre}</option>
+                                        <option className={styles.otrasTablasSelectEstilos} key={index} value={nombre}>{nombre}</option>
                                         )
                                     }
                                 </select>
@@ -362,12 +423,13 @@ export default function FormularioClientes() {
                                 <select
                                 name="provincia"
                                 onChange={handleSelectChange}
-                                className={errores.provincia ? "errorInput" : ""}
+                                className={errores.provincia ? styles.errorInputOtrasTablas : ""}
                                 value={datosFormulario.provincia}
                                 id={styles.selectProvinciasClientes}
                                 >
+                                    <option value="--Selecciona--" className={styles.selectSinSeleccionar}>--Selecciona--</option>
                                     {nombresProvincias.map((nombre, index) => 
-                                        <option key={index} value={nombre}>{nombre}</option>
+                                        <option className={styles.otrasTablasSelectEstilos} key={index} value={nombre}>{nombre}</option>
                                         )
                                     }
                                 </select>
@@ -378,16 +440,43 @@ export default function FormularioClientes() {
                                 <select
                                 name="motivo_visita"
                                 onChange={handleSelectChange}
-                                className={errores.motivo_visita ? "errorInput" : ""}
+                                className={errores.motivo_visita ? styles.errorInputOtrasTablas : ""}
                                 value={datosFormulario.motivo_visita}
                                 id={styles.selectMotivosClientes}
                                 >
+                                    <option value="--Selecciona--" className={styles.selectSinSeleccionar}>--Selecciona--</option>
                                     {nombresMotivos.map((nombre, index) => 
-                                        <option key={index} value={nombre}>{nombre}</option>
+                                        <option className={styles.otrasTablasSelectEstilos} key={index} value={nombre}>{nombre}</option>
                                         )
                                     }
                                 </select>
                             </div>
+
+                            <div>
+                                <label>Mailing</label>
+                                <div className={styles.divCheckboxFormulario}>
+                                <label><input checked={estadoCheckBoxFormulario[2].no} onChange={() => handleCheckFormulario("No", "mailing")} type="checkbox" value="No"/>No</label>
+                                <label><input checked={estadoCheckBoxFormulario[2].si} onChange={() => handleCheckFormulario("Si", "mailing")} type="checkbox" value="Si"/>Si</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label>Sexo</label>
+                                <div className={styles.divCheckboxFormulario}>
+                                <label><input checked={estadoCheckBoxFormulario[1].hombre} onChange={() => handleCheckFormulario("hombre", "sexo")} type="checkbox" value="Hombre"/>Hombre</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].mujer} onChange={() => handleCheckFormulario("mujer", "sexo")} type="checkbox" value="Mujer"/>Mujer</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].otro} onChange={() => handleCheckFormulario("otro", "sexo")} type="checkbox" value="Otro"/>Otro</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label>SMS</label>
+                                <div className={styles.divCheckboxFormulario}>
+                                <label><input checked={estadoCheckBoxFormulario[0].no} onChange={() => handleCheckFormulario("No", "sms")} type="checkbox" value="No"/>No</label>
+                                <label><input checked={estadoCheckBoxFormulario[0].si} onChange={() => handleCheckFormulario("Si", "sms")} type="checkbox" value="Si"/>Si</label>
+                                </div>
+                            </div>
+
 
                         </div>
                         {/* <label>Fecha de alta</label>
@@ -505,7 +594,7 @@ export default function FormularioClientes() {
                         <select
                         name="profesion"
                         onChange={handleSelectChange}
-                        className={errores.profesion ? "errorInput" : ""}
+                        className={errores.profesion ? "errorInputOtrasTablas" : ""}
                         value={datosFormulario.profesion}
                         id={styles.selectProfesionesClientes}
                         >
@@ -513,7 +602,7 @@ export default function FormularioClientes() {
                             {nombresProfesiones.map((nombre, index) => 
 
                                 nombre !== datosFormulario.profesion ? (
-                                    <option key={index} id={index + 2} value={nombre}>{nombre}</option>
+                                    <option className={styles.otrasTablasSelectEstilos} key={index} id={index + 2} value={nombre}>{nombre}</option>
                                 )
                                 : null
                                 )
@@ -526,14 +615,14 @@ export default function FormularioClientes() {
                         <select
                         name="provincia"
                         onChange={handleSelectChange}
-                        className={errores.provincia ? "errorInput" : ""}
+                        className={errores.provincia ? "errorInputOtrasTablas" : ""}
                         value={datosFormulario.provincia}
                         id={styles.selectProvinciasClientes}
                         >
                             <option className={styles.primeraOpcionSelect} value={datosFormulario.provincia}>{datosFormulario.provincia}</option>
                             {nombresProvincias.map((nombre, index) => 
                                     nombre !== datosFormulario.provincia ? (
-                                        <option key={index} value={nombre}>{nombre}</option>
+                                        <option className={styles.otrasTablasSelectEstilos} key={index} value={nombre}>{nombre}</option>
                                     ) : null
                                 )
                             }
@@ -545,14 +634,14 @@ export default function FormularioClientes() {
                         <select
                         name="motivo_visita"
                         onChange={handleSelectChange}
-                        className={errores.motivo_visita ? "errorInput" : ""}
+                        className={errores.motivo_visita ? "errorInputOtrasTablas" : ""}
                         value={datosFormulario.motivo_visita}
                         id={styles.selectMotivosClientes}
                         >
                             <option className={styles.primeraOpcionSelect} value={datosFormulario.motivo_visita}>{datosFormulario.motivo_visita}</option>
                             {nombresMotivos.map((nombre, index) => 
                                     nombre !== datosFormulario.motivo_visita ? (
-                                        <option key={index} value={nombre}>{nombre}</option>
+                                        <option className={styles.otrasTablasSelectEstilos} key={index} value={nombre}>{nombre}</option>
                                     ) : null
                                 )
                             }

@@ -1,13 +1,38 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import instancia from "../../config/Instancia";
 import styles from "../components/motivos_visita/motivosVisita.module.css";
 import MotivoVisita from "../components/motivos_visita/MotivoVisita";
 import { Link, useNavigate } from "react-router-dom";
-import { alertaSwal } from "../validaciones/funciones";
 import Loading from "../components/loading/Loading";
+import { useContext } from "react";
+import { GlobalContext } from "../components/context/GlobalStateProvider";
+import { alertaSwal } from "../utils/alertaSwal";
+
 
 
 export const MotivosVisita = () => {
+
+
+  const { rowSeleccionada, setRowSeleccionada } = useContext(GlobalContext);
+
+  const handleRowClick = (rowData) => { 
+    setRowSeleccionada((prevRows) => {
+      if (rowData) {
+        return {
+          ...prevRows,
+          motivos: {
+            ...prevRows.motivos,
+            [rowData]: !prevRows.motivos[rowData],
+          },
+        };
+      }
+      return prevRows;
+    });
+    window.getSelection().removeAllRanges();
+  }
+
+
+
 
   const [loading, setLoading] = useState(true);
 
@@ -23,10 +48,6 @@ export const MotivosVisita = () => {
       })
     }
   }, [navigate]);
-
-
-
-
 
 
   const [motivosVisita, setMotivosVisita] = useState ([]);
@@ -66,7 +87,11 @@ export const MotivosVisita = () => {
           </thead>
           <tbody>
           {motivosVisita.map(( motivo, index ) =>
-            <MotivoVisita key={index} motivo = {motivo} />
+            <MotivoVisita
+            rowSeleccionada={rowSeleccionada}
+            onRowClick={handleRowClick}
+            key={index}
+            motivo = {motivo} />
           )}
           </tbody>
         </table>

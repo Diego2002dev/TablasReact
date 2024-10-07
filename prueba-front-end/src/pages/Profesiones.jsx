@@ -1,15 +1,46 @@
 // REVISAR (CONSOLE.LOG DEVUELVE 3 VECES POR RENDERIZADO Y NO 2 COMO DEBERÍA)
 
-import React, { Fragment, useEffect, useState } from 'react'
-import instancia from '../../config/Instancia'
+import { useContext, useEffect, useState } from 'react'
+
 import Profesion from '../components/profesiones/Profesion';
 import styles from "../components/profesiones/profesiones.module.css";
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { alertaSwal } from '../validaciones/funciones';
+
+
 import Loading from '../components/loading/Loading';
-import UseFetchingDatos from '../hooks/UseFetchingDatos';
-function Profesiones() {
+// import UseFetchingDatos from '../hooks/UseFetchingDatos';
+import instancia from '../../config/Instancia';
+import { GlobalContext } from '../components/context/GlobalStateProvider';
+import { alertaSwal } from '../utils/alertaSwal';
+
+
+
+const  Profesiones = () => {
+
+
+  const { rowSeleccionada, setRowSeleccionada } = useContext(GlobalContext);
+
+  const handleRowClick = (rowData) => { 
+    setRowSeleccionada((prevRows) => {
+      if (rowData) {
+        return {
+          ...prevRows,
+          profesiones: {
+            ...prevRows.profesiones,
+            [rowData]: !prevRows.profesiones[rowData],
+          },
+        };
+      }
+      return prevRows;
+    });
+    window.getSelection().removeAllRanges();
+  }
+
+
+
+
+
+
 
 
   const navigate = useNavigate();
@@ -26,15 +57,22 @@ function Profesiones() {
   }, [navigate]);
 
 
-
   const [profesiones, setProfesiones] = useState([]);
-  const {loading, datos, error} = UseFetchingDatos("/profesiones/consultar.php");
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    if(datos){
-      setProfesiones(datos);
+    const fetch = async () =>{
+      await instancia("/profesiones/consultar.php")
+      .then(response => {
+        setProfesiones(response.data)
+        setLoading(false)
+      })
+      .catch(error => {
+        console.log(error)
+      })
     }
-  }, [datos])
+    fetch();
+  }, [])
 
 
   return (
@@ -55,7 +93,12 @@ function Profesiones() {
             </thead>
             <tbody>
               {profesiones.map((profesion, index) =>
-                <Profesion key = {index} profesion = {profesion}/>
+                <Profesion
+                  onRowClick = {handleRowClick}
+                  rowSeleccionada = {rowSeleccionada}
+                  key = {index}
+                  profesion = {profesion}
+                  />
               )}
             </tbody>
           </table>

@@ -1,0 +1,67 @@
+  .custom-overlay {
+    background: rgba(0, 0, 0, 0.8); /* Fondo más oscuro */
+  }
+
+  .custom-popup-success {
+    background-color: #eaffea; /* Fondo para las alertas de éxito */
+    border: 0.6rem solid #a5dc86; /* Borde verde claro */
+    font-size: 1.2rem;
+  }
+  
+  .custom-popup-error {
+    background-color: #ffebeb; /* Fondo para las alertas de error */
+    border: 0.6rem solid #f27474; /* Borde rojo */
+    font-size: 1.2rem;
+  }
+  
+  .custom-title-success {
+    color: #28a745; /* Título verde */
+    font-size: 2.4rem;
+    font-weight: bold;
+  }
+  
+  .custom-title-error {
+    color: #dc3545; /* Título rojo */
+    font-size: 2.4rem;
+    font-weight: bold;
+  }
+  
+  .custom-button-success {
+    background-color: #28a745;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    will-change: transform;
+  }
+  
+  .custom-button-error {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    cursor: pointer;
+
+    will-change: transform;
+  }
+  
+
+  .custom-button-success:hover{
+    transform: scale(1.3);
+    border: none;
+    background-color: #28a745;
+    color: white;
+  }
+
+  .custom-button-error:hover {
+    transform: scale(1.3);
+    border: none;
+    background-color: #dc3545;
+    color: white;
+  }

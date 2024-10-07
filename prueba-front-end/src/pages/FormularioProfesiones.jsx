@@ -1,10 +1,9 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import instancia from '../../config/Instancia';
-import "../validaciones/funciones";
-import { alertaSwal } from '../validaciones/funciones';
 import { validarNombre } from '../validaciones/expresionesRegulares';
 import styles from "../components/profesiones/profesiones.module.css";
+import { alertaSwal } from '../utils/alertaSwal';
 
 function FormularioProfesiones() {
 
@@ -28,35 +27,6 @@ function FormularioProfesiones() {
       
 
     useEffect(() => {
-      if (location.pathname !== '/profesiones/crear' && id) {
-        extraerIds(id);
-        establecerValores();
-      }
-      
-    }, [location.pathname]);
-
-
-
-    // Preparar los datos del formulario  
-    const [datosFormulario, setDatosFormulario] = useState({
-      nombre: "",
-    });
-    
-    
-
-    //const idBotonSeleccionado = id;
-
-
-    // const idBotonSeleccionado = searchParams.get('id');
-
-
-
-
-      /******************************
-       *                            *
-       *         FUNCIONES          *
-       *                            *
-       ******************************/
 
       const extraerIds = async (id) => {
 
@@ -87,6 +57,39 @@ function FormularioProfesiones() {
           console.error("Error: ", error);
         })
       };
+
+
+      if (location.pathname !== '/profesiones/crear' && id) {
+        extraerIds(id);
+        establecerValores();
+      }
+      
+    }, [location.pathname, id, navigate]);
+
+
+
+    // Preparar los datos del formulario  
+    const [datosFormulario, setDatosFormulario] = useState({
+      nombre: "",
+    });
+    
+    
+
+    //const idBotonSeleccionado = id;
+
+
+    // const idBotonSeleccionado = searchParams.get('id');
+
+
+
+
+      /******************************
+       *                            *
+       *         FUNCIONES          *
+       *                            *
+       ******************************/
+
+      
 
       const handleInputChange = (e) => {
         const { name, value } = e.target;

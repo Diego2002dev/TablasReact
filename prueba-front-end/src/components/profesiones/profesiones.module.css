@@ -29,6 +29,12 @@
     text-align: center;
     border-spacing: 1px;
     table-layout: fixed;
+
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 
@@ -43,6 +49,7 @@
 .thProfesiones, .tdProfesiones{
     background-color: rgb(230, 40, 90);
     border: solid 3px black;
+    transition: .4s;
 }
 
 #thIdProfesiones{
@@ -66,7 +73,14 @@
     background-color: rgb(255, 35, 35);
 }
 
-
+#tablaProfesiones tbody tr.filaSeleccionada:nth-child(even) .tdProfesiones {
+    color: white;
+    background-color: rgb(100, 180, 240);
+}
+#tablaProfesiones tbody tr.filaSeleccionada:nth-child(odd) .tdProfesiones {
+    color: white;
+    background-color: rgb(100, 180, 240);
+}
 
 
 
@@ -83,7 +97,7 @@
 }
 #botonCrearProfesiones{
     background-color: rgb(230, 40, 90);
-    margin-top: 0.3%;
+    margin-top: 0.25rem;
     width: 20%;
     height: 40px;
     font-size: 22px;

@@ -1,25 +1,29 @@
-import React, { Fragment } from 'react'
+/* eslint-disable react/prop-types */
 import { Link } from 'react-router-dom'
 import styles from "./clientes.module.css"
 
-export default function Cliente({cliente, checks}) {
+export default function Cliente({cliente, checks, onRowClick, rowSeleccionada}) {
  
  const { id, nombre, apellidos, dni, email, telefono_fijo, telefono_movil,
          profesion, direccion, codigo_postal, ciudad, provincia, fecha_nacimiento, sexo,
-         mailing, sms, motivo_visita, observaciones, estado, fecha_alta, hora } = cliente;
+         mailing, sms, motivo_visita, observaciones, estado, fecha_alta, hora } = cliente
 
 
 return (
-    <Fragment>
-        <tr id={styles.contenedorTDClientes}>
-            <td className={styles.tdClientes} style={{display: checks.id ? "" : "none"}}>{id}</td>
+    
+    <>
+        <tr onDoubleClick={() => onRowClick(id)} className={rowSeleccionada.clientes[id] ? styles.filaSeleccionada : "" }>
+
+            
+
+            <td className={styles.tdClientes}>{id}</td>
             <td className={styles.tdClientes} style={{display: checks.nombre ? "" : "none"}}>{nombre}</td>
             <td className={styles.tdClientes} style={{display: checks.apellidos ? "" : "none"}}>{apellidos}</td>
             <td className={styles.tdClientes} style={{display: checks.dni ? "" : "none"}}>{dni}</td>
             <td className={styles.tdClientes} style={{display: checks.email ? "" : "none"}}>{email}</td>
 
             <td className={styles.tdClientes} style={{display: checks.telefono_fijo ? "" : "none"}}>{telefono_fijo}</td>
-            
+
             <td className={styles.tdClientes} style={{display: checks.telefono_movil ? "" : "none"}}>{telefono_movil}</td>
             <td className={styles.tdClientes} style={{display: checks.profesion ? "" : "none"}}>{profesion}</td>
             <td className={styles.tdClientes} style={{display: checks.direccion ? "" : "none"}}>{direccion}</td>
@@ -36,12 +40,14 @@ return (
             <td className={styles.tdClientes} style={{display: checks.fecha_alta ? "" : "none"}}>{fecha_alta}</td>
             <td className={styles.tdClientes} style={{display: checks.hora ? "" : "none"}}>{hora}</td>
 
-            <td>
-                <Link id={styles.contenedorBotonModificarClientes} to={`modificar/${id}`}>
-                    <button className={styles.botonClientes}>Modificar</button>
+            <td className={styles.contenedorBotonModificarClientes}>
+                <Link to={`modificar/${cliente.id}`}>
+                    <button className={styles.botonClientes}> Modificar</button>
                 </Link>
             </td>
+            
         </tr>
-    </Fragment>
+    </>
+    
   )
 }

@@ -1,17 +1,45 @@
-import React, { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import instancia from '../../config/Instancia';
 import Cliente from '../components/clientes/Cliente';
 import styles from "../components/clientes/clientes.module.css";
 import { Link, useNavigate } from 'react-router-dom';
-import { alertaSwal } from '../validaciones/funciones';
+import { alertaSwal } from '../utils/alertaSwal';
 import Loading from '../components/loading/Loading';
+import { GlobalContext } from '../components/context/GlobalStateProvider';
+
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
 
 
-function Clientes() {
+
+
+
+
+
+const Clientes = () => {
   
-  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+
+  const { rowSeleccionada, setRowSeleccionada } = useContext(GlobalContext);
+  
+  const handleRowClick = (rowData) => { 
+    setRowSeleccionada((prevRows) => {
+      if (rowData) {
+    return {
+      ...prevRows,
+      clientes: {
+        ...prevRows.clientes,
+        [rowData]: !prevRows.clientes[rowData],
+      },
+    };
+  }
+  return prevRows;
+});
+    // window.getSelection().removeAllRanges();
+  }
+
+
+  
   useEffect(() => {
 
     const sweetAlertData = localStorage.getItem("sweetAlertData");
@@ -27,27 +55,32 @@ function Clientes() {
     
 
 
-const [checks, setChecks] = useState({  
-  id: true,
+
+
+
+const [loading, setLoading] = useState(true);
+
+
+const [checks, setChecks] = useState({
   nombre: true,
   apellidos: false,
   dni: true,
   email: false,
   telefono_fijo: false,
   telefono_movil: false,
-  profesion: true,
+  profesion: false,
   direccion: false,
   codigo_postal: false,
   ciudad: false,
-  provincia: false,
+  provincia: true,
   fecha_nacimiento: false,
   sexo: false,
   mailing: false,
   sms: false,
-  motivo_visita: false,
+  motivo_visita: true,
   observaciones: false,
-  estado: false,
-  fecha_alta: true,
+  estado: true,
+  fecha_alta: false,
   hora: false,
   })
 
@@ -55,104 +88,203 @@ const [checks, setChecks] = useState({
 
 
 
-
-
-const [bloquearCheckBox, setBloquearCheckBox] = useState(false);
 const handleCheckBox = (e) => {
   const {name, checked} = e.target;
-  if(bloquearCheckBox || !checked){
-    
-    setChecks(checksPrevios => ({
-      ...checksPrevios,
-      [name]: checked,
-    }))
+
+  setChecks(checksPrevios => ({
+    ...checksPrevios,
+    [name]: checked,
+  }))
+
+  if(selectBuscador === name){
+    setSelectBuscador("--Selecciona--");
+    setValorInputBuscar("");
+    setClientes(clientesEstatico);
+    return
+  }
+
+  if(cabezeraSeleccionada[name] || !cabezeraSeleccionada[name]){
+    const clientesOrdenados = [...clientes].sort((a, b) => {
+      if (a.id < b.id) return -1;
+      if (a.id > b.id) return 1;
+    });
+  
+    setClientes(clientesOrdenados);
+    setCabezeraSeleccionada({ id: true }); 
   }
 }
 
 
-  const [clientes, setClientes] = useState([]);
 
-  const mostrarTabla = () => {
-    instancia("clientes/consultar.php")
-    .then ( response => {
-      setClientes(response.data);
-      setLoading(false);
-    })
-    .catch(error => {
-      console.log("Error" + error);
-    })
-  }
-  
+
+
+  const [clientesEstatico, setClientesEstatico] = useState([]);
+  const [clientes, setClientes] = useState([]);
   useEffect(() => {
+
+    const mostrarTabla = async () => {
+      await instancia("clientes/consultar.php")
+      .then ( response => {
+        setClientes(response.data);
+        setClientesEstatico(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log("Error" + error);
+      })
+    }
+
     mostrarTabla();
   }, []);
   
 
 
 
+    //   // const pruebaEstilo = (e) => {
+    
+    //   //   const numeroFila = e.target.getAttribute("data-numerofila");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-  const tablaRef = useRef(true);
-  const [primerUseEffect, setPrimerUseEffect] = useState(true);
-  const [dimensionVW, setDimensionVW] = useState(0);  // Estado para almacenar el ancho de la tabla en VW
-    useEffect(() => {
-      // Función para calcular el ancho de la tabla en vw
-      if(document.getElementById("tablaClientes") !== null){
-        const calcularDimensionVW = () => {
-          const tablaAnchoPx = tablaRef.current.getBoundingClientRect().width;  // Ancho de la tabla en píxeles
-          const ventanaAnchoPx = window.innerWidth;  // Ancho de la ventana en píxeles
+    //   //   const estilo = document.querySelectorAll(`[data-numerofila = "${numeroFila}"]`);
+    //   //   setCampoSeleccionado(campo => ([...campo, numeroFila]));
+    //   //   estilo.forEach((element) => {
+    //   //     if(element.style.backgroundColor !== "red"){
+    //   //       element.style.backgroundColor = "red";
+    //   //     }
+    //   //     else{
+    //   //       element.style.backgroundColor = "";
+    //   //     }
           
-          const tablaAnchoVW = (tablaAnchoPx / ventanaAnchoPx) * 100;  // Convertir el ancho de la tabla a VW
-          // Actualizamos el estado con el ancho en VW
-          setDimensionVW(tablaAnchoVW);
+    //   //   });
+    //   //   // console.log(campoSeleccionado);
+    //   // }
+    
 
-          // console.log(tablaAnchoVW);
-          if (tablaAnchoVW > 64 || primerUseEffect == true) {
-            setBloquearCheckBox(false);  // Si excede 65vw
-            if(primerUseEffect == true){
-              setPrimerUseEffect(false);
-            }
-          } else {
-            setBloquearCheckBox(true); // Si está dentro del límite
-          }
-        };
+    //   // window.addEventListener("dblclick", pruebaEstilo);
+
+    //   // return () => {
+    //   //   window.removeEventListener("dblclick", pruebaEstilo);
+    //   // }
+    // }, [campoSeleccionado])
+
+
+
+
+    const [cabezeraSeleccionada, setCabezeraSeleccionada] = useState({id: true});
+
+    const handleOrdenarColumnas = (name) => {
       
-        // Calculamos las dimensiones al montar el componente
-        calcularDimensionVW();
+    
+      const isAscendente = !cabezeraSeleccionada[name];
+
+      if (cabezeraSeleccionada[name] === false) {
+        
+        const clientesOrdenados = [...clientes].sort((a, b) => {
+          if (a.id < b.id) return -1;
+          if (a.id > b.id) return 1;
+          return 0;
+        });
+      
+        setClientes(clientesOrdenados);
+        setCabezeraSeleccionada({ id: true });
+        return;
       }
-    }, [checks]);
+      
+
+      setCabezeraSeleccionada(() => ({
+        [name]: isAscendente,
+      }))
+
+      
+      const clientesOrdenados = [...clientes].sort((a, b) => {
+
+        if (name === "fecha_nacimiento" || name === "fecha_alta") {
+
+            const parseDate = (dateString) => {
+              const [day, month, year] = dateString.split('-');
+              return new Date(`${year}-${month}-${day}`);
+            };
+      
+            const dateA = parseDate(a[name]);
+            const dateB = parseDate(b[name]);
+      
+            if (isAscendente) {
+              return dateA - dateB;
+            } else {
+              return dateB - dateA;
+          }
+        }
+
+        if(!isNaN(a[name]) && !isNaN(b[name])){
+          if (isAscendente) {
+            if (a[name] < b[name]) return -1;
+            if (a[name] > b[name]) return 1;
+          } else {
+            if (a[name] < b[name]) return 1;
+            if (a[name] > b[name]) return -1;
+          }
+        }
 
 
-  
+        if(name === "sms" || name === "mailing"){
+          if (a[name] === "Sí" && b[name] === "No") return isAscendente ? -1 : 1;
+          if (a[name] === "No" && b[name] === "Sí") return isAscendente ? 1 : -1;
+        }
+
+        const aValor = a[name] || "";
+        const bValor = b[name] || "";
+      
+        
+        const aVacio = aValor.trim() === "";
+        const bVacio = bValor.trim() === "";
+
+
+        if (aVacio && !bVacio) return isAscendente ? 1 : -1;
+        
+        if (!aVacio && bVacio) return isAscendente ? -1 : 1;
+
+        if (isAscendente) return a[name].localeCompare(b[name], 'es', { sensitivity: 'base' });
+        return b[name].localeCompare(a[name], 'es', { sensitivity: 'base' });
+        
+      });
+    
+      setClientes(clientesOrdenados);
+    }
+    
 
 
 
 
 
+
+
+   const [valorInputBuscar, setValorInputBuscar] = useState("");
+    const handleInputBuscar = (e) => {
+
+      if (!selectBuscador) return;
+
+      const { value } = e.target;
+      setValorInputBuscar(value);
+
+      const clientesBuscados = clientesEstatico.filter(cliente =>
+        cliente[selectBuscador].toLowerCase().includes(value.toLowerCase())
+      );
+      setClientes(clientesBuscados);
+    };
+
+
+
+   const [selectBuscador, setSelectBuscador] = useState("--Selecciona--");
+    const handleSelectBuscar = (e) => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      const name = selectedOption.getAttribute("data-name");
+      clientesEstatico
+      
+      
+      setValorInputBuscar("");
+      setClientes(clientesEstatico);
+      setSelectBuscador(name);
+      
+    }
 
 
   return (
@@ -163,70 +295,110 @@ const handleCheckBox = (e) => {
       <>
         <h1 id={styles.h1Clientes}>Clientes</h1>
 
+        <div id={styles.buscador}>
+        <select onChange = {handleSelectBuscar}>
+            <option data-name="--Selecciona--">--Selecciona--</option>
+            {checks.nombre ? <option data-name="nombre">Nombre</option> : null}
+            {checks.apellidos ? <option data-name="apellidos">Apellidos</option> : null}
+            {checks.dni ? <option data-name="dni">DNI</option> : null}
+            {checks.email ? <option data-name="email">Email</option> : null}
+            {checks.telefono_fijo ? <option data-name="telefono_fijo">Telefono Fijo</option> : null}
+            {checks.telefono_movil ? <option data-name="telefono_movil">Telefono Móvil</option> : null}
+            {checks.profesion ? <option data-name="profesion">Profesión</option> : null}
+            {checks.direccion ? <option data-name="direccion">Direccion</option> : null}
+            {checks.codigo_postal ? <option data-name="codigo_postal">Código postal</option> : null}
+            {checks.ciudad ? <option data-name="ciudad">Ciudad</option> : null}
+            {checks.provincia ? <option data-name="provincia">Provincia</option> : null}
+            {checks.fecha_nacimiento ? <option data-name="fecha_nacimiento">Fecha nacimiento</option> : null}
+            {checks.sexo ? <option data-name="sexo">Sexo</option> : null}
+            {checks.mailing ? <option data-name="mailing">Mailing</option> : null}
+            {checks.sms ? <option data-name="sms">sms</option> : null}
+            {checks.motivo_visita ? <option data-name="motivo_visita">Motivo visita</option> : null}
+            {checks.observaciones ? <option data-name="observaciones">Observaciones</option> : null}
+            {checks.estado ? <option data-name="estado">Estado</option> : null}
+            {checks.fecha_alta ? <option data-name="fecha_alta">Fecha alta</option> : null}
+            {checks.hora ? <option data-name="hora">Hora</option> : null}
+        </select>
+        
+        <input
+        onChange={handleInputBuscar}
+        disabled={selectBuscador == "--Selecciona--" ? true : false}
+        value={valorInputBuscar}
+        >
+        </input>
+        </div>
+
+        
         <div id={styles.divCheckBox}>
-          {/* <label className={!bloquearCheckBox && !checks.id ? "checkedBox" : "notCheckedBox"}><input className={!bloquearCheckBox && !checks.id ? "checkedBox" : "notCheckedBox"} name="id" type="checkbox" onChange={handleCheckBox} checked={checks.id} />id</label> */}
-          <label className={!bloquearCheckBox && !checks.nombre ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.nombre ? styles.checkedBox : styles.notCheckedBox} name="nombre" type="checkbox" onChange={handleCheckBox} checked={checks.nombre} />Nombre</label>
-          <label className={!bloquearCheckBox && !checks.apellidos ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.apellidos ? styles.checkedBox : styles.notCheckedBox} name="apellidos" type="checkbox" onChange={handleCheckBox} checked={checks.apellidos} />Apellidos</label>
-          <label className={!bloquearCheckBox && !checks.dni ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.dni ? styles.checkedBox : styles.notCheckedBox} name="dni" type="checkbox" onChange={handleCheckBox} checked={checks.dni} />DNI</label>
-          <label className={!bloquearCheckBox && !checks.email ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.email ? styles.checkedBox : styles.notCheckedBox} name="email" type="checkbox" onChange={handleCheckBox} checked={checks.email} />Email</label>
-          <label className={!bloquearCheckBox && !checks.telefono_fijo ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.telefono_fijo ? styles.checkedBox : styles.notCheckedBox} name="telefono_fijo" type="checkbox" onChange={handleCheckBox} checked={checks.telefono_fijo} />Teléfono fijo</label>
-          <label className={!bloquearCheckBox && !checks.telefono_movil ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.telefono_movil ? styles.checkedBox : styles.notCheckedBox} name="telefono_movil" type="checkbox" onChange={handleCheckBox} checked={checks.telefono_movil} />Teléfono movil</label>
-          <label className={!bloquearCheckBox && !checks.profesion ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.profesion ? styles.checkedBox : styles.notCheckedBox} name="profesion" type="checkbox" onChange={handleCheckBox} checked={checks.profesion} />Profesion</label>
-          <label className={!bloquearCheckBox && !checks.direccion ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.direccion ? styles.checkedBox : styles.notCheckedBox} name="direccion" type="checkbox" onChange={handleCheckBox} checked={checks.direccion} />Dirección</label>
-          <label className={!bloquearCheckBox && !checks.codigo_postal ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.codigo_postal ? styles.checkedBox : styles.notCheckedBox} name="codigo_postal" type="checkbox" onChange={handleCheckBox} checked={checks.codigo_postal} />Codigo postal</label>
-          <label className={!bloquearCheckBox && !checks.ciudad ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.ciudad ? styles.checkedBox : styles.notCheckedBox} name="ciudad" type="checkbox" onChange={handleCheckBox} checked={checks.ciudad} />Ciudad</label>
-          <label className={!bloquearCheckBox && !checks.provincia ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.provincia ? styles.checkedBox : styles.notCheckedBox} name="provincia" type="checkbox" onChange={handleCheckBox} checked={checks.provincia} />Provincia</label>
-          <label className={!bloquearCheckBox && !checks.fecha_nacimiento ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.fecha_nacimiento ? styles.checkedBox : styles.notCheckedBox} name="fecha_nacimiento" type="checkbox" onChange={handleCheckBox} checked={checks.fecha_nacimiento} />Fecha de nacimiento</label>
-          <label className={!bloquearCheckBox && !checks.sexo ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.sexo ? styles.checkedBox : styles.notCheckedBox} name="sexo" type="checkbox" onChange={handleCheckBox} checked={checks.sexo} />Sexo</label>
-          <label className={!bloquearCheckBox && !checks.mailing ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.mailing ? styles.checkedBox : styles.notCheckedBox} name="mailing" type="checkbox" onChange={handleCheckBox} checked={checks.mailing} />Mailing</label>
-          <label className={!bloquearCheckBox && !checks.sms ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.sms ? styles.checkedBox : styles.notCheckedBox} name="sms" type="checkbox" onChange={handleCheckBox} checked={checks.sms} />SMS</label>
-          <label className={!bloquearCheckBox && !checks.motivo_visita ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.motivo_visita ? styles.checkedBox : styles.notCheckedBox} name="motivo_visita" type="checkbox" onChange={handleCheckBox} checked={checks.motivo_visita} />Motivo de visita</label>
-          <label className={!bloquearCheckBox && !checks.observaciones ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.observaciones ? styles.checkedBox : styles.notCheckedBox} name="observaciones" type="checkbox" onChange={handleCheckBox} checked={checks.observaciones} />Obervaciones</label>
-          <label className={!bloquearCheckBox && !checks.estado ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.estado ? styles.checkedBox : styles.notCheckedBox} name="estado" type="checkbox" onChange={handleCheckBox} checked={checks.estado} />Estado</label>
-          <label className={!bloquearCheckBox && !checks.fecha_alta ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.fecha_alta ? styles.checkedBox : styles.notCheckedBox} name="fecha_alta" type="checkbox" onChange={handleCheckBox} checked={checks.fecha_alta} />Fecha de alta</label>
-          <label className={!bloquearCheckBox && !checks.hora ? styles.checkedBox : styles.notCheckedBox}><input  className={!bloquearCheckBox && !checks.hora ? styles.checkedBox : styles.notCheckedBox} name="hora" type="checkbox" onChange={handleCheckBox} checked={checks.hora} />Hora</label>     
+      {/* <label className={!bloquearCheckBox && !checks.id ? "checkedBox" : ""}><input className={!bloquearCheckBox && !checks.id ? "checkedBox" : ""} name="id" type="checkbox" onChange={handleCheckBox} checked={checks.id} />id</label> */}
+          <label><input name="nombre" type="checkbox" onChange={handleCheckBox} checked={checks.nombre} />Nombre</label>
+          <label><input name="apellidos" type="checkbox" onChange={handleCheckBox} checked={checks.apellidos} />Apellidos</label>
+          <label><input name="dni" type="checkbox" onChange={handleCheckBox} checked={checks.dni} />DNI</label>
+          <label><input name="email" type="checkbox" onChange={handleCheckBox} checked={checks.email} />Email</label>
+          <label><input name="telefono_fijo" type="checkbox" onChange={handleCheckBox} checked={checks.telefono_fijo} />Teléfono fijo</label>
+          <label><input name="telefono_movil" type="checkbox" onChange={handleCheckBox} checked={checks.telefono_movil} />Teléfono movil</label>
+          <label><input name="profesion" type="checkbox" onChange={handleCheckBox} checked={checks.profesion} />Profesion</label>
+          <label><input name="direccion" type="checkbox" onChange={handleCheckBox} checked={checks.direccion} />Dirección</label>
+          <label><input name="codigo_postal" type="checkbox" onChange={handleCheckBox} checked={checks.codigo_postal} />Codigo postal</label>
+          <label><input name="ciudad" type="checkbox" onChange={handleCheckBox} checked={checks.ciudad} />Ciudad</label>
+          <label><input name="provincia" type="checkbox" onChange={handleCheckBox} checked={checks.provincia} />Provincia</label>
+          <label><input name="fecha_nacimiento" type="checkbox" onChange={handleCheckBox} checked={checks.fecha_nacimiento} />Fecha de nacimiento</label>
+          <label><input name="sexo" type="checkbox" onChange={handleCheckBox} checked={checks.sexo} />Sexo</label>
+          <label><input name="mailing" type="checkbox" onChange={handleCheckBox} checked={checks.mailing} />Mailing</label>
+          <label><input name="sms" type="checkbox" onChange={handleCheckBox} checked={checks.sms} />SMS</label>
+          <label><input name="motivo_visita" type="checkbox" onChange={handleCheckBox} checked={checks.motivo_visita} />Motivo de visita</label>
+          <label><input name="observaciones" type="checkbox" onChange={handleCheckBox} checked={checks.observaciones} />Obervaciones</label>
+          <label><input name="estado" type="checkbox" onChange={handleCheckBox} checked={checks.estado} />Estado</label>
+          <label><input name="fecha_alta" type="checkbox" onChange={handleCheckBox} checked={checks.fecha_alta} />Fecha de alta</label>
+          <label><input name="hora" type="checkbox" onChange={handleCheckBox} checked={checks.hora} />Hora</label>     
         </div>
 
         <div id={styles.contenedorTablaClientes}>
 
-        <table ref={tablaRef} id="tablaClientes">
+        <table>
           <thead>
             <tr>
-              <th style={{display: checks.id ? "" : "none"}}>ID</th>
-              <th style={{display: checks.nombre ? "" : "none"}}>Nombre</th>
-              <th style={{display: checks.apellidos ? "" : "none"}}>Apellidos</th>
-
-              <th style={{display: checks.dni ? "" : "none"}}>DNI</th>
-
-              <th style={{display: checks.email ? "" : "none"}}>Email</th>
-              <th style={{display: checks.telefono_fijo ? "" : "none"}}>Teléfono fijo</th>
-              <th style={{display: checks.telefono_movil ? "" : "none"}}>Teléfono móvil</th>
-              <th style={{display: checks.profesion ? "" : "none"}}>Profesión</th>
-              <th style={{display: checks.direccion ? "" : "none"}}>Dirección</th>
-              <th style={{display: checks.codigo_postal ? "" : "none"}}>Código postal</th>
-              <th style={{display: checks.ciudad ? "" : "none"}}>Ciudad</th>
-              <th style={{display: checks.provincia ? "" : "none"}}>Provincia</th>
-              <th style={{display: checks.fecha_nacimiento ? "" : "none"}}>Fecha de nacimiento</th>
-              <th style={{display: checks.sexo ? "" : "none"}}>Sexo</th>
-              <th style={{display: checks.mailing ? "" : "none"}}>Mailing</th>
-              <th style={{display: checks.sms ? "" : "none"}}>sms</th>
-              <th style={{display: checks.motivo_visita ? "" : "none"}}>Motivo de visita</th>
-              <th style={{display: checks.observaciones ? "" : "none"}}>Observaciones</th>
-              <th style={{display: checks.estado ? "" : "none"}}>Estado</th>
-              <th style={{display: checks.fecha_alta ? "" : "none"}}>Fecha de alta</th>
-              <th style={{display: checks.hora ? "" : "none"}}>Hora</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("id")}>ID</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("nombre")} style={{display: checks.nombre ? "" : "none"}}>{cabezeraSeleccionada.nombre ? "⇩" : cabezeraSeleccionada.nombre == null ? "" : "⇧"}Nombre</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("apellidos")} style={{display: checks.apellidos ? "" : "none"}}>{cabezeraSeleccionada.apellidos ? "⇩" : cabezeraSeleccionada.apellidos == null ? "" : "⇧"}Apellidos</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("dni")} style={{display: checks.dni ? "" : "none"}}>{cabezeraSeleccionada.dni ? "⇩" : cabezeraSeleccionada.dni == null ? "" : "⇧"}DNI</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("email")} style={{display: checks.email ? "" : "none"}}>{cabezeraSeleccionada.email ? "⇩" : cabezeraSeleccionada.email == null ? "" : "⇧"}Email</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("telefono_fijo")} style={{display: checks.telefono_fijo ? "" : "none"}}>{cabezeraSeleccionada.telefono_fijo ? "⇩" : cabezeraSeleccionada.telefono_fijo == null ? "" : "⇧"}Teléfono fijo</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("telefono_movil")} style={{display: checks.telefono_movil ? "" : "none"}}>{cabezeraSeleccionada.telefono_movil ? "⇩" : cabezeraSeleccionada.telefono_movil == null ? "" : "⇧"}Teléfono móvil</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("profesion")} style={{display: checks.profesion ? "" : "none"}}>{cabezeraSeleccionada.profesion ? "⇩" : cabezeraSeleccionada.profesion == null ? "" : "⇧"}Profesión</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("direccion")} style={{display: checks.direccion ? "" : "none"}}>{cabezeraSeleccionada.direccion ? "⇩" : cabezeraSeleccionada.direccion == null ? "" : "⇧"}Dirección</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("codigo_postal")} style={{display: checks.codigo_postal ? "" : "none"}}>{cabezeraSeleccionada.codigo_postal ? "⇩" : cabezeraSeleccionada.codigo_postal == null ? "" : "⇧"}Código postal</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("ciudad")} style={{display: checks.ciudad ? "" : "none"}}>{cabezeraSeleccionada.ciudad ? "⇩" : cabezeraSeleccionada.ciudad == null ? "" : "⇧"}Ciudad</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("provincia")} style={{display: checks.provincia ? "" : "none"}}>{cabezeraSeleccionada.provincia ? "⇩" : cabezeraSeleccionada.provincia == null ? "" : "⇧"}Provincia</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("fecha_nacimiento")} style={{display: checks.fecha_nacimiento ? "" : "none"}}>{cabezeraSeleccionada.fecha_nacimiento ? "⇩" : cabezeraSeleccionada.fecha_nacimiento == null ? "" : "⇧"}Fecha de nacimiento</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("sexo")} style={{display: checks.sexo ? "" : "none"}}>{cabezeraSeleccionada.sexo ? "⇩" : cabezeraSeleccionada.sexo == null ? "" : "⇧"}Sexo</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("mailing")} style={{display: checks.mailing ? "" : "none"}}>{cabezeraSeleccionada.mailing ? "⇩" : cabezeraSeleccionada.mailing == null ? "" : "⇧"}Mailing</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("sms")} style={{display: checks.sms ? "" : "none"}}>{cabezeraSeleccionada.sms ? "⇩" : cabezeraSeleccionada.sms == null ? "" : "⇧"}sms</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("motivo_visita")} style={{display: checks.motivo_visita ? "" : "none"}}>{cabezeraSeleccionada.motivo_visita ? "⇩" : cabezeraSeleccionada.motivo_visita == null ? "" : "⇧"}Motivo de visita</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("observaciones")} style={{display: checks.observaciones ? "" : "none"}}>{cabezeraSeleccionada.observaciones ? "⇩" : cabezeraSeleccionada.observaciones == null ? "" : "⇧"}Observaciones</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("estado")} style={{display: checks.estado ? "" : "none"}}>{cabezeraSeleccionada.estado ? "⇩" : cabezeraSeleccionada.estado == null ? "" : "⇧"}Estado</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("fecha_alta")} style={{display: checks.fecha_alta ? "" : "none"}}>{cabezeraSeleccionada.fecha_alta ? "⇩" : cabezeraSeleccionada.fecha_alta == null ? "" : "⇧"}Fecha de alta</th>
+              <th className={cabezeraSeleccionada ? styles.cabezeraSeleccionada : styles.cabezeraNoSeleccionada} onClick={() => handleOrdenarColumnas("hora")} style={{display: checks.hora ? "" : "none"}}>{cabezeraSeleccionada.hora ? "⇩" : cabezeraSeleccionada.hora == null ? "" : "⇧"}Hora</th>
               <th className="ocultarScroll"></th>
             </tr>
           </thead>
           <tbody>
+            
             {clientes.map ((cliente, index) =>
-              <Cliente key = {index} checks = {checks} cliente = {cliente}/>
+              <Cliente
+              rowSeleccionada = {rowSeleccionada}
+              onRowClick={handleRowClick}
+              key = {index}
+              checks = {checks}
+              cliente = {cliente}/>
             )}
+
           </tbody>
         </table>
         </div>
-        <Link to="crear">
-        <button id={styles.botonCrearClientes}>Crear Cliente</button>
+
+        <Link to="crear" id={styles.botonCrearClientes}>
+          <button>Crear Cliente</button>
         </Link>
       </>
     )
@@ -234,12 +406,3 @@ const handleCheckBox = (e) => {
 }
 
 export default Clientes
-
-
-// Cambiar método de " cuanta de columnas "
-
-
-
-// HACER LOADING
-// Carga devolver algo difrente cuando no se recive la tabla del servidor
-// HACER LOADING

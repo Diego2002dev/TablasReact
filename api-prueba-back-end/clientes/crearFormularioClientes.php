@@ -3,53 +3,6 @@ require_once "../config/config.php";
 require_once "../config/cabezeras/cabezeras.php";
 
 
-// function validarIdMotivosVisita($conexion, $motivo_visita){
-
-//     $queryValidarId = $conexion->prepare("SELECT COUNT(*) as count FROM motivos_visita WHERE id = ? ");
-//     $queryValidarId->bind_param("s", $motivo_visita);    
-//     $queryValidarId->execute();
-//     $resultado = $queryValidarId->get_result();
-//     $row = $resultado->fetch_assoc();
-//     $count = $row["count"];
-
-//     if($count > 0){
-//         return true;
-//     }
-//     else{
-//         return false;
-//     }
-// }
-// function validarIdProfesiones($conexion, $profesion){
-//     $queryValidarId = $conexion->prepare("SELECT COUNT(*) as count FROM profesiones WHERE id = ? ");
-//     $queryValidarId->bind_param("s", $profesion);    
-//     $queryValidarId->execute();
-//     $resultado = $queryValidarId->get_result();
-//     $row = $resultado->fetch_assoc();
-//     $count = $row["count"];
-
-//     if($count > 0){
-//         return true;
-//     }
-//     else{
-//         return false;
-//     }
-// }
-// function validarIdProvincia($conexion, $provincia){
-//     $queryValidarId = $conexion->prepare("SELECT COUNT(*) as count FROM provincias WHERE id = ? ");
-//     $queryValidarId->bind_param("s", $provincia);    
-//     $queryValidarId->execute();
-//     $resultado = $queryValidarId->get_result();
-//     $row = $resultado->fetch_assoc();
-//     $count = $row["count"];
-
-//     if($count > 0){
-//         return true;
-//     }
-//     else{
-//         return false;
-//     }
-// }
-
 function deNombreAId($conexion, $profesion, $tablas){
     $query = $conexion->prepare("SELECT id FROM " . $tablas . " WHERE nombre = ?");
     $query->bind_param("s", $profesion);
@@ -64,6 +17,14 @@ function quitarEspaciosSobrantes($string){
 }
 
 
+function validarDuplicidadDNI($conexion, $id){
+    $query = $conexion->prepare("SELECT dni FROM clientes WHERE id = ? ");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $result = $query->get_result();
+    $row = $result->fetch_assoc();
+    return $row["dni"];
+}
 
 
 
@@ -120,23 +81,31 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
 
     $response = [];
 
-    $profesion = deNombreAId($conexion, $profesion, "profesiones");
-    $provincia = deNombreAId($conexion, $provincia, "provincias");
-    $motivo_visita = deNombreAId($conexion, $motivo_visita, "motivos_visita");
-
-    $query = $conexion->prepare("INSERT INTO clientes (nombre, apellidos, dni, email, telefono_fijo, telefono_movil, profesion, direccion, codigo_postal, ciudad, provincia, fecha_nacimiento, sexo, mailing, sms, motivo_visita, observaciones, estado, fecha_alta, hora)
-                                VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
-
-    $estado = "Activo";
-    $query->bind_param("ssssiissssssssssssss", $nombre, $apellidos, $dni, $email, $telefono_fijo, $telefono_movil, $profesion,
-                                            $direccion, $codigo_postal, $ciudad, $provincia, $fecha_nacimiento, $sexo,
-                                            $mailing, $sms, $motivo_visita, $observaciones, $estado, $fecha_alta, $hora);
-
-    if($query->execute()){
-        $response["mensaje"] = "El cliente se ha registrado correctamente";
-        $response["tipo"] = "success";
+    if(validarDuplicidadDNI($conexion, $id) === $dni){
+        $response["mensaje"] = "El DNI ya existe";
+        $response["tipo"] = "error";
     }
-    
+
+    else{
+        
+
+        $profesion = deNombreAId($conexion, $profesion, "profesiones");
+        $provincia = deNombreAId($conexion, $provincia, "provincias");
+        $motivo_visita = deNombreAId($conexion, $motivo_visita, "motivos_visita");
+
+        $query = $conexion->prepare("INSERT INTO clientes (nombre, apellidos, dni, email, telefono_fijo, telefono_movil, profesion, direccion, codigo_postal, ciudad, provincia, fecha_nacimiento, sexo, mailing, sms, motivo_visita, observaciones, estado, fecha_alta, hora)
+                                    VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+
+        $estado = "Activo";
+        $query->bind_param("ssssiissssssssssssss", $nombre, $apellidos, $dni, $email, $telefono_fijo, $telefono_movil, $profesion,
+                                                $direccion, $codigo_postal, $ciudad, $provincia, $fecha_nacimiento, $sexo,
+                                                $mailing, $sms, $motivo_visita, $observaciones, $estado, $fecha_alta, $hora);
+
+        if($query->execute()){
+            $response["mensaje"] = "El cliente se ha registrado correctamente";
+            $response["tipo"] = "success";
+        }
+    }
 
     echo json_encode($response);
 

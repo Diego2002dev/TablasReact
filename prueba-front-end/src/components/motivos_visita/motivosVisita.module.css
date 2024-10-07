@@ -20,6 +20,12 @@
     border-spacing: 1px;
     text-align: center;
     table-layout: fixed;
+
+    
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 
@@ -50,19 +56,27 @@ width: 13.43%;
 }
 
 
-
+#tablaMotivosVisita .td{
+    transition: 0.4s;
+}
 
 
 #tablaMotivosVisita tbody tr:nth-child(even) .td {
     background-color: lightblue;
 }
-
-
 #tablaMotivosVisita tbody tr:nth-child(odd) .td {
     background-color: rgb(60, 226, 226);
 }
 
 
+#tablaMotivosVisita tbody tr.filaSeleccionada:nth-child(odd) .td {
+    color: white;
+    background-color: rgb(30, 247, 20);
+}
+#tablaMotivosVisita tbody tr.filaSeleccionada:nth-child(even) .td {
+    color: white;
+    background-color: rgb(30, 247, 20);
+}
 
 
 
@@ -82,7 +96,7 @@ width: 13.43%;
 }
 
 #botonCrear {
-    margin-top: 0.3%;
+    margin-top: 0.25rem;
     width: 27.3%;
     height: 40px;
     font-size: 22px;

@@ -1,4 +1,3 @@
-import React from 'react'
 import "./barraLateral.css"
 import { Link, useLocation } from 'react-router-dom'
 

@@ -129,4 +129,18 @@ export function validarFechaNacimiento(fecha) {
     }
 }
 
-// Deja mas libertad al usuario
+export function validarProfesiones(profesion) {
+    if(profesion == "--Selecciona--"){
+        return "Selecciona una profesión";
+    }
+}
+export function validarProvincias(provincia) {
+    if(provincia == "--Selecciona--"){
+        return "Selecciona una provincia";
+    }
+}
+export function validarMotivos(motivos_visita) {
+    if(motivos_visita == "--Selecciona--"){
+        return "Selecciona un motivo de visíta";
+    }
+}

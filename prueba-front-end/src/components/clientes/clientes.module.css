@@ -23,30 +23,48 @@
     position: relative;
     text-align: center;
     border-spacing: 1px;
-    left: 4.84vw;
-    top: 2vh;
+    
+    
+
+    left: 4.2%;
     max-width: 90vw;
     max-height: 49.45vh;
     margin: auto;
-    overflow-x: wrap;
+    margin-top: 2vh;
+    overflow-x: auto;
     overflow-y: auto;
+
 }
 
+#contenedorTablaClientes table{
+    box-sizing: content-box;
+    width: 100%;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* #clientesFilas{
+    max-width: 80vw;
+    overflow-x: auto;
+} */
 
    
+
 #contenedorTablaClientes::-webkit-scrollbar {
     display: none;
 }
     
 
 
-
 .tdClientes{
     white-space: nowrap;
     border: 3px solid black;
-    max-width: 30vw;
     text-overflow: ellipsis;
     overflow: hidden;
+    transition: background-color .4s, color .4s;
 }
 
 
@@ -55,12 +73,20 @@
     background-color: rgb(110, 215, 80);
 }
 
-
 #contenedorTablaClientes tbody tr:nth-child(odd) .tdClientes {
     background-color: rgb(0, 255, 170);
 }
 
 
+
+#contenedorTablaClientes tbody tr.filaSeleccionada:nth-child(odd) .tdClientes {
+    color: white;
+    background-color: rgb(230, 40, 90);
+}
+#contenedorTablaClientes tbody tr.filaSeleccionada:nth-child(even) .tdClientes {
+    background-color: rgb(230, 40, 90);
+    color: white;
+}
 
 
 
@@ -70,12 +96,20 @@
  *                            *
  ******************************/
 
-
-#botonCrearClientes{
+ #botonCrearClientes{
     position: relative;
-    left: 9.4%;
+    left: 8.91%;
+    
+    width: 20%;
+    height: 40px;
+    font-size: 22px;
+    font-family: 'Courier New';
+    font-weight: 700;
+}
+
+#botonCrearClientes button{
     background-color: rgb(30, 247, 20);
-    margin-top: 1.55%;
+    margin-top: 0.25rem;
     width: 20%;
     height: 40px;
     font-size: 22px;
@@ -84,26 +118,57 @@
 }
 
 
-.botonClientes{
-    position: relative;
+
+
+.contenedorBotonModificarClientes{
+    position: sticky;
+
+    background-color: white;
+    right: 0;
+    width: 0;
+}
+.contenedorBotonModificarClientes button{
+    
+    display: inline;
     background-color: rgb(30, 247, 20);
     font-size: 14px;
     font-family: "Courier New";
     font-weight: 600;
-    left: 1%;
+    margin-left: .4vw;
 }
 
 
-.botonClientes:hover, #botonCrearClientes:hover{
+.botonClientes:hover, #botonCrearClientes button:hover{
     background-color: rgb(210, 210, 210);
     border: 3px solid rgb(30, 247, 20);
     color: rgb(30, 247, 20);
     cursor: pointer;
 }
 
+#buscador{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 9vh;
+    left: 4vw;
+}
 
-
-
+#buscador select{
+    height: 3.645vh;
+}
+#buscador input{
+    height: 3vh;
+    
+}
+#buscador select:hover,
+#buscador select:focus{
+    outline: 0 solid black;
+    border-top: 2px solid black;
+}
+#buscador input:hover,
+#buscador input:focus{
+    outline: 1px solid black;
+}
 
 
 
@@ -196,18 +261,8 @@
     outline: none;
 }
 
-.grupoForm input,
-.grupoForm select{
-    transition: transform 0.18s; 
-}
 
-.grupoForm input:focus,
-.grupoForm input:hover,
-.grupoForm select:focus,
-.grupoForm select:hover,
-.inputObservaciones:hover{
-    transform: scale(1.15, 1.05);
-}
+
 /* .grupoForm select option{
     width: 50px;
     white-space:pre-wrap;
@@ -220,7 +275,7 @@
 } */
 
 .grupoForm #selectProfesionesClientes{
-    background-color: rgb(230, 40, 90);
+    background-color: rgb(250, 120, 120);
 }
 .grupoForm #selectProvinciasClientes{
     background-color: rgb(30, 247, 20);
@@ -229,26 +284,42 @@
     background-color: rgb(100, 180, 240);
 }
 
-.grupoForm #selectProfesionesClientes option:nth-child(even){
-    background-color: rgb(250, 120, 120);
-}
-.grupoForm #selectProfesionesClientes option:nth-child(odd){
+.grupoForm #selectProfesionesClientes .otrasTablasSelectEstilos:nth-child(even){
     background-color: rgb(255, 35, 35);
 }
+.grupoForm #selectProfesionesClientes .otrasTablasSelectEstilos:nth-child(odd){
+    background-color: rgb(250, 120, 120);
+}
 
-.grupoForm #selectProvinciasClientes option:nth-child(odd){
+.grupoForm #selectProvinciasClientes .otrasTablasSelectEstilos:nth-child(odd){
     background-color: rgb(110, 215, 80);
 }
-.grupoForm #selectProvinciasClientes option:nth-child(even){
+.grupoForm #selectProvinciasClientes .otrasTablasSelectEstilos:nth-child(even){
     background-color: rgb(0, 255, 170);
 }
 
-.grupoForm #selectMotivosClientes option:nth-child(odd){
+.grupoForm #selectMotivosClientes .otrasTablasSelectEstilos:nth-child(odd){
     background-color: rgb(60, 226, 226);
 }
-.grupoForm #selectMotivosClientes option:nth-child(even){
+.grupoForm #selectMotivosClientes .otrasTablasSelectEstilos:nth-child(even){
     background-color: lightblue;
 }
+
+
+.grupoForm #selectProfesionesClientes:hover,
+.grupoForm #selectProfesionesClientes:focus,
+.grupoForm #selectProvinciasClientes:hover,
+.grupoForm #selectProvinciasClientes:focus,
+.grupoForm #selectMotivosClientes:hover,
+.grupoForm #selectMotivosClientes:focus{
+    border-bottom: 3.5px solid black;
+    outline: 0;
+}
+
+.selectSinSeleccionar{
+    background-color: rgb(182, 182, 182);
+}
+
 
 
 
@@ -303,7 +374,6 @@ input[type=number]::-webkit-inner-spin-button {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     
-
     /* display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -314,6 +384,13 @@ input[type=number]::-webkit-inner-spin-button {
     height: 16vh;
     margin: auto;
     border: 3px solid black;
+    border-radius: 20px;
+
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 #divCheckBox label{
@@ -330,18 +407,8 @@ input[type=number]::-webkit-inner-spin-button {
 #divCheckBox .checkedBox{
     opacity: 0.6;  
     
-    user-select: none;
-    -webkit-user-select: none;  /* Para compatibilidad con navegadores webkit (Chrome, Safari) */
-    -moz-user-select: none;    /* Para Firefox */
-    -ms-user-select: none;     /* Para IE y Edge */
 }
-#divCheckBox .notCheckedBox{
-    
-    user-select: none;
-    -webkit-user-select: none; /* Para compatibilidad con navegadores webkit (Chrome, Safari) */
-    -moz-user-select: none;    /* Para Firefox */
-    -ms-user-select: none;     /* Para IE y Edge */
-}
+
 
 
 
@@ -371,6 +438,70 @@ input[type=number]::-webkit-inner-spin-button {
 .inputObservaciones:focus:hover{
     outline: none;
 }
+
+
+.cabezeraSeleccionada{
+    cursor: pointer;
+    transform-origin: top;
+    transition: 0.2s;
+}
+
+.cabezeraNoSeleccionada{
+    cursor: pointer;
+    
+}
+
+.cabezeraSeleccionada:hover{
+    background-color: rgb(210, 210, 210);
+    border: 3px solid rgb(30, 247, 20);
+    color: rgb(30, 247, 20);
+}
+.cabezeraNoSeleccionada:hover{
+    
+}
+.inputBusqueda{
+    
+
+}
+
+.iconoColumnasOrdenadas{
+    width: 40px;
+    height: 40px;
+    text-align: center;
+}
+
+.errorInputOtrasTablas{
+    border-bottom: 3.5px solid red;
+}
+
+
+
+
+
+.divCheckboxFormulario{
+    display: flex;
+}
+.divCheckboxFormulario label{
+    display: inline-flex;
+    font-size: 1.2rem;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.divCheckboxFormulario input{
+    width: 1vw;
+    height: auto;
+    margin-bottom: 2vw;
+}
+.divCheckboxFormulario input:hover,
+.divCheckboxFormulario input:focus{
+    outline: 0;
+}
+
+
+
 
 
 /*
