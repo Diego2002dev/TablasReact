@@ -246,7 +246,7 @@ const handleCheckBox = (e) => {
         return b[name].localeCompare(a[name], 'es', { sensitivity: 'base' });
         
       });
-    
+      
       setClientes(clientesOrdenados);
     }
     
@@ -324,6 +324,8 @@ const handleCheckBox = (e) => {
         onChange={handleInputBuscar}
         disabled={selectBuscador == "--Selecciona--" ? true : false}
         value={valorInputBuscar}
+        className={selectBuscador == "--Selecciona--" ? styles.bloqueadoFormulario : ""}
+        placeholder="Buscar..."
         >
         </input>
         </div>

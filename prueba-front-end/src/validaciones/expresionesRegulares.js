@@ -144,3 +144,20 @@ export function validarMotivos(motivos_visita) {
         return "Selecciona un motivo de visíta";
     }
 }
+
+
+export function validarSms(sms){
+    if(sms == ""){
+        return "Marca una casilla del sms"
+    }
+}
+export function validarSexo(sexo){
+    if(sexo == ""){
+        return "Marca una casilla de sexo"
+    }
+}
+export function validarMailing(mailing){
+    if(mailing == ""){
+        return "Marca una casilla del mailing"
+    }
+}

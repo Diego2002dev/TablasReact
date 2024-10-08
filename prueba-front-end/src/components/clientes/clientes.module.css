@@ -170,7 +170,10 @@
     outline: 1px solid black;
 }
 
-
+#buscador .bloqueadoFormulario:hover,
+#buscador .bloqueadoFormulario:focus{
+    outline: 0;
+}
 
 
 
@@ -210,12 +213,7 @@
     overflow-y: auto;
 }
 
-.contenedorFormularioClientesScroll{
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-}
+
 
 .grupoForm {
     display: flex;
@@ -278,24 +276,24 @@
     background-color: rgb(250, 120, 120);
 }
 .grupoForm #selectProvinciasClientes{
-    background-color: rgb(30, 247, 20);
+    background-color: rgb(0, 255, 170);
 }
 .grupoForm #selectMotivosClientes{
-    background-color: rgb(100, 180, 240);
+    background-color: rgb(60, 226, 226);
 }
 
-.grupoForm #selectProfesionesClientes .otrasTablasSelectEstilos:nth-child(even){
-    background-color: rgb(255, 35, 35);
-}
 .grupoForm #selectProfesionesClientes .otrasTablasSelectEstilos:nth-child(odd){
     background-color: rgb(250, 120, 120);
 }
+.grupoForm #selectProfesionesClientes .otrasTablasSelectEstilos:nth-child(even){
+    background-color: rgb(255, 35, 35);
+}
 
 .grupoForm #selectProvinciasClientes .otrasTablasSelectEstilos:nth-child(odd){
-    background-color: rgb(110, 215, 80);
+    background-color: rgb(0, 255, 170);
 }
 .grupoForm #selectProvinciasClientes .otrasTablasSelectEstilos:nth-child(even){
-    background-color: rgb(0, 255, 170);
+    background-color: rgb(110, 215, 80);
 }
 
 .grupoForm #selectMotivosClientes .otrasTablasSelectEstilos:nth-child(odd){
@@ -316,11 +314,10 @@
     outline: 0;
 }
 
+
 .selectSinSeleccionar{
     background-color: rgb(182, 182, 182);
 }
-
-
 
 
 
@@ -405,8 +402,7 @@ input[type=number]::-webkit-inner-spin-button {
     height: initial;
 }
 #divCheckBox .checkedBox{
-    opacity: 0.6;  
-    
+    opacity: 0.6;
 }
 
 
@@ -484,6 +480,7 @@ input[type=number]::-webkit-inner-spin-button {
 .divCheckboxFormulario label{
     display: inline-flex;
     font-size: 1.2rem;
+    padding: 0 0.5rem;
 
     user-select: none;
     -webkit-user-select: none;
@@ -491,18 +488,25 @@ input[type=number]::-webkit-inner-spin-button {
     -ms-user-select: none;
 }
 .divCheckboxFormulario input{
+    position: relative;
     width: 1vw;
     height: auto;
-    margin-bottom: 2vw;
+    bottom: .1vw;
 }
 .divCheckboxFormulario input:hover,
 .divCheckboxFormulario input:focus{
     outline: 0;
 }
 
+.erroresDivCheckboxFormulario{
+    display: flex;
+}
 
-
-
+.checkBoxError{
+    padding: 0 1rem;
+    border: 3px solid red;
+    border-radius: 2px;
+}
 
 /*
 

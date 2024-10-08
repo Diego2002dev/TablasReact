@@ -3,7 +3,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import instancia from '../../config/Instancia';
 import styles from "../components/clientes/clientes.module.css";
 import { validarApellidos, validarCiudad, validarCodigoPostal, validarDireccion, validarDni, validarEmail,
-         validarFechaNacimiento, validarMotivos, validarNombreCliente, validarProfesiones, validarProvincias,
+         validarFechaNacimiento, validarMailing, validarMotivos, validarNombreCliente, validarProfesiones, validarProvincias,
+         validarSexo,
+         validarSms,
          validarTFijo, validarTMovil }
          from '../validaciones/expresionesRegulares';
 import { alertaSwal } from '../utils/alertaSwal';
@@ -33,7 +35,22 @@ export default function FormularioClientes() {
         { campo: 'profesion', validacion: validarProfesiones },
         { campo: 'provincia', validacion: validarProvincias },
         { campo: 'motivo_visita', validacion: validarMotivos },
+        { campo: 'sms', validacion: validarSms },
+        { campo: 'sexo', validacion: validarSexo },
+        { campo: 'mailing', validacion: validarMailing },
     ]);
+
+
+
+
+
+
+    const [estadoCheckBoxFormulario, setEstadoCheckBoxFormulario] = useState([
+        {si: false, no: false},
+        {hombre: false, mujer: false, otro: true},
+        {si: false, no: false},
+    ])
+
 
     const [datosFormulario, setDatosFormulario] = useState({
         
@@ -102,26 +119,31 @@ export default function FormularioClientes() {
                     email: response.data.email,
                     telefono_fijo: response.data.telefono_fijo,
                     telefono_movil: response.data.telefono_movil,
-    
                     profesion: response.data.profesion,
-    
                     direccion: response.data.direccion,
                     codigo_postal: response.data.codigo_postal,
                     ciudad: response.data.ciudad,
                     provincia: response.data.provincia,
                     fecha_nacimiento: response.data.fecha_nacimiento,
-                    sexo: response.data.sexo,
-                    mailing: response.data.mailing,
-                    sms: response.data.sms,
-    
+
+
+                    // sexo: response.data.sexo,
+                    // mailing: response.data.mailing,
+                    // sms: response.data.sms,
+
+
                     motivo_visita: response.data.motivo_visita,
-    
                     observaciones: response.data.observaciones,
                     estado: response.data.estado,
                     fecha_alta: response.data.fecha_alta,
                     hora: response.data.hora,
                 }));
-                
+
+                // setEstadoCheckBoxFormulario(() => ({
+                //     {response.data.sms: true},
+                //     {response.data.sexo: true},
+                //     {response.data.mailing: true},
+                // }));
             })
             .catch (error => {
                 console.log(`Error ${error}`);
@@ -151,7 +173,7 @@ export default function FormularioClientes() {
      *                            *
      ******************************/
 
-    
+
 
     const fetchNombres = async (api, setState) => {
         await instancia(api)
@@ -201,20 +223,27 @@ export default function FormularioClientes() {
 
 
 
-    const [estadoCheckBoxFormulario, setEstadoCheckBoxFormulario] = useState([
-        {si: false, no: false},
-        {hombre: false, mujer: false, otro: false},
-        {si: false, no: false},
-    ])
+    
     
     const handleCheckFormulario = (value, name) => {
-        console.log(estadoCheckBoxFormulario);
+        
+        setDatosFormulario((datosPrevios) => ({
+            ...datosPrevios,
+            [name]: value,
+        }))
+
+        if(errores[name] === true){
+            setErrores((erroresPrevios) => ({
+                ...erroresPrevios,
+                [name]: false,
+            }))
+        }
+        
         if (name === "sms") {
             setEstadoCheckBoxFormulario((prevState) => {
                 
                 const nuevoEstado = [...prevState];
     
-                
                 nuevoEstado[0] = {
                     si: value == "Si",
                     no: value == "No",
@@ -223,35 +252,34 @@ export default function FormularioClientes() {
                 return nuevoEstado;
             });
         }
-        if (name === "sexo") {
+        else if (name === "sexo") {
             setEstadoCheckBoxFormulario((prevState) => {
                 
                 const nuevoEstado = [...prevState];
     
-                
                 nuevoEstado[1] = {
-                    hombre: value == "hombre",
-                    mujer: value == "mujer",
-                    otro: value == "otro",
+                    hombre: value == "Hombre",
+                    mujer: value == "Mujer",
+                    otro: value == "Otro",
                 };
     
                 return nuevoEstado;
             });
         }
-        if (name === "mailing") {
+        else if (name === "mailing") {
             setEstadoCheckBoxFormulario((prevState) => {
                 
                 const nuevoEstado = [...prevState];
     
-                
                 nuevoEstado[2] = {
                     si: value == "Si",
                     no: value == "No",
                 };
-    
+            
                 return nuevoEstado;
             });
         }
+
     };
 
 
@@ -307,13 +335,12 @@ export default function FormularioClientes() {
                 return;
             }
 
-            if (response.data.tipo === "success") {
             localStorage.setItem("sweetAlertData", JSON.stringify({
                     mensaje: response.data.mensaje,
-                })
-            );
+                }))
+            
             navigate("/clientes");
-            }
+            
         }
         catch (error) {
             console.error(`ErrorCATCH: ${error}`);
@@ -330,7 +357,7 @@ export default function FormularioClientes() {
                 <form className={styles.contenedorFormularioClientes} onSubmit={enviarFormulario("clientes/crearFormularioClientes.php")}>
                 <h2 className={styles.h2FormularioClientes}>Formulario</h2>
                 <h3 className={styles.h3FormularioClientes}>Clientes</h3>
-                    <div className={styles.contenedorFormularioClientesScroll}>
+                    <div>
 
                         <div className={styles.grupoForm}>
 
@@ -453,7 +480,7 @@ export default function FormularioClientes() {
                             </div>
 
                             <div>
-                                <label>Mailing</label>
+                                <label className={errores.mailing ? styles.checkBoxError : ""}>Mailing</label>
                                 <div className={styles.divCheckboxFormulario}>
                                 <label><input checked={estadoCheckBoxFormulario[2].no} onChange={() => handleCheckFormulario("No", "mailing")} type="checkbox" value="No"/>No</label>
                                 <label><input checked={estadoCheckBoxFormulario[2].si} onChange={() => handleCheckFormulario("Si", "mailing")} type="checkbox" value="Si"/>Si</label>
@@ -461,16 +488,16 @@ export default function FormularioClientes() {
                             </div>
 
                             <div>
-                                <label>Sexo</label>
+                                <label className={errores.sexo ? styles.checkBoxError : ""}>Sexo</label>
                                 <div className={styles.divCheckboxFormulario}>
-                                <label><input checked={estadoCheckBoxFormulario[1].hombre} onChange={() => handleCheckFormulario("hombre", "sexo")} type="checkbox" value="Hombre"/>Hombre</label>
-                                <label><input checked={estadoCheckBoxFormulario[1].mujer} onChange={() => handleCheckFormulario("mujer", "sexo")} type="checkbox" value="Mujer"/>Mujer</label>
-                                <label><input checked={estadoCheckBoxFormulario[1].otro} onChange={() => handleCheckFormulario("otro", "sexo")} type="checkbox" value="Otro"/>Otro</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].hombre} onChange={() => handleCheckFormulario("Hombre", "sexo")} type="checkbox" value="Hombre"/>Hombre</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].mujer} onChange={() => handleCheckFormulario("Mujer", "sexo")} type="checkbox" value="Mujer"/>Mujer</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].otro} onChange={() => handleCheckFormulario("Otro", "sexo")} type="checkbox" value="Otro"/>Otro</label>
                                 </div>
                             </div>
 
                             <div>
-                                <label>SMS</label>
+                                <label className={errores.sms ? styles.checkBoxError : ""}>SMS</label>
                                 <div className={styles.divCheckboxFormulario}>
                                 <label><input checked={estadoCheckBoxFormulario[0].no} onChange={() => handleCheckFormulario("No", "sms")} type="checkbox" value="No"/>No</label>
                                 <label><input checked={estadoCheckBoxFormulario[0].si} onChange={() => handleCheckFormulario("Si", "sms")} type="checkbox" value="Si"/>Si</label>
@@ -492,7 +519,7 @@ export default function FormularioClientes() {
             <form className={styles.contenedorFormularioClientes} onSubmit={enviarFormulario("clientes/modificarFormularioClientes.php")}>
             <h2 className={styles.h2FormularioClientes}>Formulario</h2>
             <h3 className={styles.h3FormularioClientes}>Clientes</h3>
-                <div className={styles.contenedorFormularioClientesScroll}>
+                <div>
                     <div className={styles.grupoForm}>
                         {/* <div>
                         <label>ID</label>
@@ -549,31 +576,6 @@ export default function FormularioClientes() {
                         <div>
                         <label className={styles.fecha_nacimiento}>Fecha de nacimiento</label>
                         <input type="date" name="fecha_nacimiento" onChange={handleInputChange} className={errores.fecha_nacimiento ? "errorInput" : ""} value={datosFormulario.fecha_nacimiento || ""} required></input>
-                        </div>
-
-                        <div>
-                        <label>Sexo</label>
-                        <select name="sexo" onChange={handleSelectChange} value={datosFormulario.sexo}>
-                            <option value="Hombre">Hombre</option>
-                            <option value="Mujer">Mujer</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                        </div>
-
-                        <div>
-                        <label>Mailing</label>
-                        <select name="mailing" onChange={handleSelectChange} value={datosFormulario.mailing}>
-                            <option value="No">No</option>
-                            <option value="Si">Si</option>
-                        </select>
-                        </div>
-
-                        <div>
-                        <label>SMS</label>
-                        <select name="sms" onChange={handleSelectChange} value={datosFormulario.sms}>
-                            <option value="No">No</option>
-                            <option value="Si">Si</option>
-                        </select>
                         </div>
 
                         <div>
@@ -647,6 +649,31 @@ export default function FormularioClientes() {
                             }
                         </select>
                         </div>
+
+                        <div>
+                                <label className={errores.mailing ? styles.checkBoxError : ""}>Mailing</label>
+                                <div className={styles.divCheckboxFormulario}>
+                                <label><input checked={estadoCheckBoxFormulario[2].no} onChange={() => handleCheckFormulario("No", "mailing")} type="checkbox" value="No"/>No</label>
+                                <label><input checked={estadoCheckBoxFormulario[2].si} onChange={() => handleCheckFormulario("Si", "mailing")} type="checkbox" value="Si"/>Si</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className={errores.sexo ? styles.checkBoxError : ""}>Sexo</label>
+                                <div className={styles.divCheckboxFormulario}>
+                                <label><input checked={estadoCheckBoxFormulario[1].hombre} onChange={() => handleCheckFormulario("Hombre", "sexo")} type="checkbox" value="Hombre"/>Hombre</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].mujer} onChange={() => handleCheckFormulario("Mujer", "sexo")} type="checkbox" value="Mujer"/>Mujer</label>
+                                <label><input checked={estadoCheckBoxFormulario[1].otro} onChange={() => handleCheckFormulario("Otro", "sexo")} type="checkbox" value="Otro"/>Otro</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className={errores.sms ? styles.checkBoxError : ""}>SMS</label>
+                                <div className={styles.divCheckboxFormulario}>
+                                <label><input checked={estadoCheckBoxFormulario[0].no} onChange={() => handleCheckFormulario("No", "sms")} type="checkbox" value="No"/>No</label>
+                                <label><input checked={estadoCheckBoxFormulario[0].si} onChange={() => handleCheckFormulario("Si", "sms")} type="checkbox" value="Si"/>Si</label>
+                                </div>
+                            </div>
 
                     </div>
 
